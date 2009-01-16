@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * Default Layout
+ */
+
+echo '<?xml version="1.0" encoding="UTF-8" ?>';
+echo $this->doctype() 
+?>
+
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<?php 
+		echo $this->headTitle();
+	    echo $this->headLink()->appendStylesheet('styles/main.css');
+	    ?>
+	</head>
+	
+	<body>	
+		
+		<div id="page"> 
+		
+			<div id="header">
+	            <h1>My Zend Site</h1>	
+	            <?php echo $this->render('menu.phtml'); ?>  
+	        </div><!-- header div ends -->
+			
+			<div id="content">
+            	<h2><?php echo $this->placeholder('title'); ?></h2>
+				<?php echo $this->layout()->content; ?>
+			</div><!-- content div ends -->
+			
+			<div id="footer">
+				<p>&copy; <?php echo date('Y'); ?></p>
+			</div><!-- footer div ends -->
+				
+		</div><!-- page div ends -->
+		
+	</body>
+
+</html>
