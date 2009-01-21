@@ -9,7 +9,7 @@ require_once realpath(dirname(__FILE__) . '/../TestHelper.php');
 /**
  * IndexController Test Case
  */
-class IndexControllerTest extends Zend_Test_PHPUnit_ControllerTestCase {
+class DefaultIndexControllerTest extends Zend_Test_PHPUnit_ControllerTestCase {
 
 	/**
 	 * Prepares the environment before running a test.
