@@ -1,8 +1,13 @@
 <ul>
-
+  <li><a href="<?php echo $this->url(array('controller' => 'index', 'action' => 'index'), 'default'); ?>">Home</a></li>
+  
   <?php foreach ($this->menuLinks as $link) : ?>
   
-    <li><a href="#"><?php echo ucwords($link); ?></a></li>
+    <li>
+	    <a href="<?php echo $this->url(array('action' => $this->escape($link)), 'page'); ?>">
+	    <?php echo ucwords($this->escape($link)); ?>
+	    </a>
+    </li>
     
   <?php endforeach; ?>
   

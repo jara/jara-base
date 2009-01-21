@@ -14,7 +14,7 @@ echo $this->doctype()
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<?php 
 		echo $this->headTitle();
-	    echo $this->headLink()->appendStylesheet('styles/main.css');
+	    echo $this->headLink()->appendStylesheet($this->baseUrl . '/styles/main.css');
 	    ?>
 	</head>
 	

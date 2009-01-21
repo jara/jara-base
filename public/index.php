@@ -1,8 +1,8 @@
 <?php
 /**
- * My new Zend Framework Project
+ * Jara Base Zend Framework project
  * 
- * @author  
- * @version 
+ * @author Ekerete Akpan
  */
+
 require '../application/bootstrap.php'; 

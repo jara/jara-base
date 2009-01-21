@@ -59,6 +59,23 @@ class IndexControllerTest extends Zend_Test_PHPUnit_ControllerTestCase {
 		$this->assertAction('index');
 	}
 	
+	/**
+	 * Test default route to about page
+	 */
+	public function testShouldGetAboutPageWithDefaulRoute() {
+		$this->dispatch('/index/about');
+		$this->assertController('index');
+		$this->assertAction('about');
+	}
+	
+	/**
+	 * Test page route to about page
+	 */
+	public function testShouldGetAboutPageWithPageRoute() {
+		$this->dispatch('about');
+		$this->assertController('index');
+		$this->assertAction('about');
+	}
 	
 }
 ?>

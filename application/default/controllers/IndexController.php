@@ -3,8 +3,7 @@
 /**
  * IndexController - The default controller class
  * 
- * @author
- * @version 
+ * @author Ekerete Akpan 
  */
 
 class IndexController extends Zend_Controller_Action 
@@ -18,7 +17,8 @@ class IndexController extends Zend_Controller_Action
 	 */
 	public function init() 
 	{
-		$this->view->menuLinks = array('home', 'about', 'contact');
+		$this->view->menuLinks = array('about');
+		$this->view->baseUrl = $this->getFrontController()->getBaseUrl();
 	}
 
 	/**
@@ -26,6 +26,14 @@ class IndexController extends Zend_Controller_Action
 	 */
     public function indexAction() 
     {
-        // TODO Auto-generated IndexController::indexAction() action
+    	
+    }
+    
+	/**
+	 * The about Jara page
+	 */
+    public function aboutAction() 
+    {
+        
     }
 }

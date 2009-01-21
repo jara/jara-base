@@ -170,7 +170,12 @@ class Initializer extends Zend_Controller_Plugin_Abstract
      */
     public function initRoutes()
     {
-    
+    	$router = $this->_front->getRouter();
+    	$pageRoute = new Zend_Controller_Router_Route(
+    		':action',
+    		array('module' => 'default', 'controller' => 'index')
+    	);    	   	
+		$router->addRoute('page', $pageRoute);
     }
 
     /**
