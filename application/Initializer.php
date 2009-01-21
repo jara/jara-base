@@ -231,11 +231,6 @@ class Initializer extends Zend_Controller_Plugin_Abstract
 			{
 				$includePaths[] = $modulePath . 'models';
 			}
-			
-			if (is_dir($modulePath . 'controllers')) 
-			{
-				$includePaths[] = $modulePath . 'controllers';
-			}
 		}
 		
 		return $includePaths;
