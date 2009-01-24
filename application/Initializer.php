@@ -219,13 +219,16 @@ class Initializer extends Zend_Controller_Plugin_Abstract
      * @return 	array 	An array of include paths
      */
     public static function getIncludePaths($rootPath) {
-		$includePaths = array('library');
+		$includePaths = array();
+		$includePaths[] = $rootPath . DIRECTORY_SEPARATOR . 'library';
 		
 		$jaraModules = self::getAvailableModules($rootPath);		
 		
 		foreach ($jaraModules as $jaraMod) 
 		{			
-			$modulePath = $rootPath . DIRECTORY_SEPARATOR . $jaraMod . DIRECTORY_SEPARATOR;
+			$modulePath = $rootPath . DIRECTORY_SEPARATOR . 
+						  'application' . DIRECTORY_SEPARATOR . 
+						  $jaraMod . DIRECTORY_SEPARATOR;
 			
 			if (is_dir($modulePath . 'models')) 
 			{
@@ -238,4 +241,3 @@ class Initializer extends Zend_Controller_Plugin_Abstract
     }
     
 }
-?>
