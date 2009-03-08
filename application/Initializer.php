@@ -5,17 +5,6 @@
  * @author  Ekerete Akpan
  */
 
-if (!defined('APP_ROOT')) {
-	define('APP_ROOT', realpath(dirname(dirname(__FILE__))));
-}
-if (!defined('APP_ENV')) {
-	define('APP_ENV', 'development');
-}
-
-require_once 'Zend/Controller/Plugin/Abstract.php';
-require_once 'Zend/Controller/Front.php';
-require_once 'Zend/Controller/Request/Abstract.php';
-require_once 'Zend/Controller/Action/HelperBroker.php';
 
 /**
  * 
@@ -185,59 +174,10 @@ class Initializer extends Zend_Controller_Plugin_Abstract
      */
     public function initControllers()
     {
-    	$jaraModules = self::getAvailableModules($this->_root);
+    	$jaraModules = Setup::getAvailableModules($this->_root);
     	foreach ($jaraModules as $module) {
     		$this->_front->addControllerDirectory($this->_root . "/application/{$module}/controllers", $module);
     	}
-    }
-    
-    /**
-     * Get all the available modules
-     * 
-     * @param 	string 	$rootPath 	The application root path
-     * @return 	array
-     */
-    public static function getAvailableModules($rootPath) 
-    {
-	    $jaraModules = array();
-		$jaraExclude = array('layouts');
-		$jaraDirectories = new DirectoryIterator($rootPath. '/application');		
-		
-		foreach ($jaraDirectories as $jaraDir) {
-			if (!$jaraDir->isDot() && !$jaraDir->isFile() && !in_array($jaraDir, $jaraExclude)) {
-				$jaraModules[] = (string)$jaraDir;
-			}
-		}
-		
-		return $jaraModules;
-    }
-    
-    /**
-     * Get the application include paths
-     * 
-     * @param 	string 	$rootPath 	The application root path
-     * @return 	array 	An array of include paths
-     */
-    public static function getIncludePaths($rootPath) {
-		$includePaths = array();
-		$includePaths[] = $rootPath . DIRECTORY_SEPARATOR . 'library';
-		
-		$jaraModules = self::getAvailableModules($rootPath);		
-		
-		foreach ($jaraModules as $jaraMod) 
-		{			
-			$modulePath = $rootPath . DIRECTORY_SEPARATOR . 
-						  'application' . DIRECTORY_SEPARATOR . 
-						  $jaraMod . DIRECTORY_SEPARATOR;
-			
-			if (is_dir($modulePath . 'models')) 
-			{
-				$includePaths[] = $modulePath . 'models';
-			}
-		}
-		
-		return $includePaths;
-    	
-    }
+    }      
     
 }
