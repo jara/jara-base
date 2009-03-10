@@ -6,7 +6,4 @@
  */
 
 require_once 'Setup.php';
-
-/* Start the bootstrap process */
-Setup::startBootstrap();
 Setup::dispatchJara();

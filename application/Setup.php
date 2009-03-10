@@ -27,14 +27,12 @@ class Setup {
 		
 		$jaraModules = self::getAvailableModules($rootPath);		
 		
-		foreach ($jaraModules as $jaraMod) 
-		{			
+		foreach ($jaraModules as $jaraMod) {			
 			$modulePath = $rootPath . DIRECTORY_SEPARATOR . 
 						  'application' . DIRECTORY_SEPARATOR . 
 						  $jaraMod . DIRECTORY_SEPARATOR;
 			
-			if (is_dir($modulePath . 'models')) 
-			{
+			if (is_dir($modulePath . 'models')) {
 				$includePaths[] = $modulePath . 'models';
 			}
 		}
@@ -73,6 +71,16 @@ class Setup {
     }
 
     /**
+    * Prepare the front controller, register the initialiser and dispatch
+    */
+    public static function dispatchJara() {
+        require_once 'Initializer.php';
+        $frontController = Zend_Controller_Front::getInstance();
+        $frontController->registerPlugin(new Initializer(APP_ENV)); 
+        $frontController->dispatch();  
+    }
+
+    /**
     * get the application include paths and tack them on to the system paths
     */
     private static function setupIncludePaths() {
@@ -89,14 +97,7 @@ class Setup {
         Zend_Loader::registerAutoload(); 
     }
 
-    /**
-    * Prepare the front controller, register the initialiser and dispatch
-    */
-    public static function dispatchJara() {
-        require_once 'Initializer.php';
-        $frontController = Zend_Controller_Front::getInstance();
-        $frontController->registerPlugin(new Initializer(APP_ENV)); 
-        $frontController->dispatch();  
-    }
-
 }
+
+/* Start the bootstrap process */
+Setup::startBootstrap();

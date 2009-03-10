@@ -6,8 +6,7 @@
  * @author Ekerete Akpan 
  */
 
-class IndexController extends Zend_Controller_Action 
-{
+class IndexController extends Jara_Controller {
 
 	/**
 	 * Controller init method
@@ -15,25 +14,23 @@ class IndexController extends Zend_Controller_Action
 	 * This method is run before the specified controller action.
 	 * Put all common controller stuff in here 
 	 */
-	public function init() 
-	{
+	public function init() {
+		parent::init();
 		$this->view->menuLinks = array('about');
-		$this->view->baseUrl = $this->getFrontController()->getBaseUrl();
 	}
 
 	/**
 	 * The default action - show the home page
 	 */
-    public function indexAction() 
-    {
+    public function indexAction() {
     	
     }
     
 	/**
 	 * The about Jara page
 	 */
-    public function aboutAction() 
-    {
+    public function aboutAction() {
         
     }
+    
 }
