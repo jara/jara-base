@@ -1,0 +1,20 @@
+<ul>
+  <li><a href="<?php echo $this->url(array('module' => 'default', 
+											'controller' => 'index', 
+											'action' => 'index')); ?>">
+	Home</a></li>
+  
+  <?php if (!empty($this->menuLinks)) : ?>
+  <?php foreach ($this->menuLinks as $link) : ?>
+  
+    <li>
+	    <a href="<?php echo $this->escape($link); ?>">
+	    <?php echo ucwords($this->escape($link)); ?>
+	    </a>
+    </li>
+    
+  <?php endforeach; ?>
+  <?php endif; ?>
+  
+</ul>
+

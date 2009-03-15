@@ -134,7 +134,14 @@ class Initializer extends Zend_Controller_Plugin_Abstract
      */
     public function initView()
     {
-		// Bootstrap layouts
+		$view = new Zend_View();
+		$sharedPath = $this->_root . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'shared';
+		$view->addScriptPath($sharedPath);
+		
+		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+		$viewRenderer->setView($view);
+    	
+    	// Bootstrap layouts
 		Zend_Layout::startMvc(array(
 		    'layoutPath' => $this->_root .  '/application/layouts',
 		    'layout' => 'main'
@@ -155,16 +162,31 @@ class Initializer extends Zend_Controller_Plugin_Abstract
     /**
      * Initialize routes
      * 
+     * @todo move this into a catch all plugin and provide the option to switch it off
      * @return void
      */
     public function initRoutes()
     {
     	$router = $this->_front->getRouter();
-    	$pageRoute = new Zend_Controller_Router_Route(
-    		':action',
-    		array('module' => 'default', 'controller' => 'index')
-    	);    	   	
-		$router->addRoute('page', $pageRoute);
+    	$dispatcher = $this->_front->getDispatcher();
+    	
+    	$defaultController = $dispatcher->getDefaultControllerName();
+    	$defaultControllerName = $dispatcher->formatControllerName($defaultController);
+    	
+    	$class = new ReflectionClass($defaultControllerName);
+	 	$methods = $class->getMethods();
+	 	
+	 	foreach ($methods as $method) {
+	 		if ($method->isPublic() && ($method->getName() != 'index') && (preg_match('/Action/', $method->getName()))) {
+	 			$action = str_replace('Action', '', $method->getName());
+	 			$pageRoute = new Zend_Controller_Router_Route_Static(
+		    		$action,
+		    		array('module' => 'default', 'controller' => 'index', 'action' => $action)
+		    	);    	   	
+				$router->addRoute($action, $pageRoute);
+	 		}
+	 	}    	
+    	
     }
 
     /**

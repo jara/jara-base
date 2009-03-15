@@ -9,37 +9,8 @@ require_once realpath(dirname(__FILE__) . '/../TestHelper.php');
 /**
  * IndexController Test Case
  */
-class DefaultIndexControllerTest extends Zend_Test_PHPUnit_ControllerTestCase {
+class DefaultIndexControllerTest extends Jara_ControllerTestCase {
 
-	/**
-	 * Prepares the environment before running a test.
-	 */
-	protected function setUp() {
-		$this->bootstrap = array($this, 'appBootstrap' );
-		parent::setUp ();		
-	}
-
-	/**
-	 * Prepares the environment before running a test.
-	 */
-	public function appBootstrap() {
-		$this->frontController->registerPlugin(new Initializer(APP_ENV));
-	}
-	
-	/**
-	 * Cleans up the environment after running a test.
-	 */
-	protected function tearDown() {		
-		parent::tearDown ();
-	}
-	
-	/**
-	 * Constructs the test case.
-	 */
-	public function __construct() {
-		
-	}
-	
 	/**
 	 * Tests IndexController->indexAction()
 	 */
@@ -78,4 +49,3 @@ class DefaultIndexControllerTest extends Zend_Test_PHPUnit_ControllerTestCase {
 	}
 	
 }
-?>
