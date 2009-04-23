@@ -101,9 +101,9 @@ class Initializer extends Zend_Controller_Plugin_Abstract
        	$this->initDb();
         $this->initHelpers();
         $this->initView();
-        $this->initPlugins();
-        $this->initRoutes();
+        $this->initPlugins();        
         $this->initControllers();
+        $this->initRoutes($request);
     }
     
     /**
@@ -162,31 +162,22 @@ class Initializer extends Zend_Controller_Plugin_Abstract
     /**
      * Initialize routes
      * 
+     * @param 	Zend_Controller_Request_Abstract $request
      * @todo move this into a catch all plugin and provide the option to switch it off
      * @return void
      */
-    public function initRoutes()
-    {
-    	$router = $this->_front->getRouter();
-    	$dispatcher = $this->_front->getDispatcher();
-    	
-    	$defaultController = $dispatcher->getDefaultControllerName();
-    	$defaultControllerName = $dispatcher->formatControllerName($defaultController);
-    	
-    	$class = new ReflectionClass($defaultControllerName);
-	 	$methods = $class->getMethods();
-	 	
-	 	foreach ($methods as $method) {
-	 		if ($method->isPublic() && ($method->getName() != 'index') && (preg_match('/Action/', $method->getName()))) {
-	 			$action = str_replace('Action', '', $method->getName());
-	 			$pageRoute = new Zend_Controller_Router_Route_Static(
-		    		$action,
-		    		array('module' => 'default', 'controller' => 'index', 'action' => $action)
-		    	);    	   	
-				$router->addRoute($action, $pageRoute);
-	 		}
-	 	}    	
-    	
+    public function initRoutes($request)
+    {  	     	
+      	$dispatcher = $this->_front->getDispatcher();
+      	
+      	$defaultController = $dispatcher->getDefaultControllerClass($request);   	
+      	$controllerClass = $dispatcher->loadClass($defaultController);
+      	$class = new ReflectionClass($controllerClass);
+      	
+      	if ($class) {
+	     	$methods = $class->getMethods();
+	     	$this->_addStaticRoutes($methods);		  	
+     	} 
     }
 
     /**
@@ -200,6 +191,28 @@ class Initializer extends Zend_Controller_Plugin_Abstract
     	foreach ($jaraModules as $module) {
     		$this->_front->addControllerDirectory($this->_root . "/application/{$module}/controllers", $module);
     	}
-    }      
+    } 
+
+    /**
+     * Add the static routes to the router
+     * 
+     * @param 	array 	$methods 	The class methods for the default controller
+     */
+    protected function _addStaticRoutes($methods) {
+    	if (!is_array($methods) || empty($methods)) {
+    		return false;
+    	}
+    	$router = $this->_front->getRouter();
+    	foreach ($methods as $method) {
+		     if ($method->isPublic() && ($method->getName() != 'index') && (preg_match('/Action/', $method->getName()))) {
+			       $action = str_replace('Action', '', $method->getName());
+			       $pageRoute = new Zend_Controller_Router_Route_Static(
+				       $action,
+				       array('module' => 'default', 'controller' => 'index', 'action' => $action)
+			     	);      
+		     	$router->addRoute($action, $pageRoute);
+	   		}
+	  	}
+    }
     
 }

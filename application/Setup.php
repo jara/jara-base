@@ -35,9 +35,6 @@ class Setup {
 			if (is_dir($modulePath . 'models')) {
 				$includePaths[] = $modulePath . 'models';
 			}
-			if (is_dir($modulePath . 'controllers')) {
-				$includePaths[] = $modulePath . 'controllers';
-			}
 		}
 		
 		return $includePaths;
