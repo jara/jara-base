@@ -104,28 +104,6 @@ class Zend_CodeGenerator_Php_Method extends Zend_CodeGenerator_Php_Member_Abstra
     }
     
     /**
-     * setDocblock()
-     *
-     * @param Zend_CodeGenerator_Php_Docblock $methodDocblock
-     * @return Zend_CodeGenerator_Php_Method
-     */
-    public function setDocblock(Zend_CodeGenerator_Php_Docblock $docblock)
-    {
-        $this->_docblock = $docblock;
-        return $this;
-    }
-    
-    /**
-     * getDocblock()
-     *
-     * @return Zend_CodeGenerator_Php_Docblock
-     */
-    public function getDocblock()
-    {
-        return $this->_docblock;
-    }
-    
-    /**
      * setFinal()
      *
      * @param bool $isFinal
@@ -237,7 +215,7 @@ class Zend_CodeGenerator_Php_Method extends Zend_CodeGenerator_Php_Member_Abstra
 
         if ($this->_body) {
             $output .= '        ' 
-                    .  str_replace(PHP_EOL, PHP_EOL . '        ', $this->_body) 
+                    .  str_replace(PHP_EOL, PHP_EOL . '        ', trim($this->_body)) 
                     .  PHP_EOL;
         }
         

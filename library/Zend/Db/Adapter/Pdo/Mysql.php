@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysql.php 14692 2009-04-06 02:20:57Z norm2782 $
+ * @version    $Id: Mysql.php 14953 2009-04-17 00:56:16Z norm2782 $
  */
 
 
@@ -89,7 +89,7 @@ class Zend_Db_Adapter_Pdo_Mysql extends Zend_Db_Adapter_Pdo_Abstract
         }
 
         if (!empty($this->_config['charset'])) {
-            $initCommand = 'SET NAMES ' . $this->_config['charset'];
+            $initCommand = "SET NAMES '" . $this->_config['charset'] . "'";
             $this->_config['driver_options'][PDO::MYSQL_ATTR_INIT_COMMAND] = $initCommand;
         }
 

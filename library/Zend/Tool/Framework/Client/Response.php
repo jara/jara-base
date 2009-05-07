@@ -168,9 +168,10 @@ class Zend_Tool_Framework_Client_Response
      * @param Zend_Tool_Framework_Client_Response_ContentDecorator_Interface $contentDecorator
      * @return unknown
      */
-    public function addContentDecorator(Zend_Tool_Framework_Client_Response_ContentDecorator_Interface  $contentDecorator)
+    public function addContentDecorator(Zend_Tool_Framework_Client_Response_ContentDecorator_Interface $contentDecorator)
     {
-        $this->_decorators[strtolower($contentDecorator->getName())] = $contentDecorator;
+        $decoratorName = strtolower($contentDecorator->getName());
+        $this->_decorators[$decoratorName] = $contentDecorator;
         return $this;
     }
     
@@ -201,21 +202,22 @@ class Zend_Tool_Framework_Client_Response
      * @param array $decoratorOptions
      * @return string
      */
-    protected function _applyDecorators($content, $decoratorOptions)
+    protected function _applyDecorators($content, Array $decoratorOptions)
     {
         $options = array_merge($this->_defaultDecoratorOptions, $decoratorOptions);
         
-        foreach ($options as $optionName => $optionValue) {
-            if (!array_key_exists(strtolower($optionName), $this->_decorators)) {
-                // option is not supported by this response object
-                continue;
+        $options = array_change_key_case($options, CASE_LOWER);
+        
+        if ($options) {
+            foreach ($this->_decorators as $decoratorName => $decorator) {
+                if (array_key_exists($decoratorName, $options)) {
+                    $content = $decorator->decorate($content, $options[$decoratorName]);
+                }
             }
-            
-            $decorator = $this->_decorators[strtolower($optionName)];
-            $content = $decorator->decorate($content, $optionValue);
         }
         
         return $content;
+        
     }
 
 }

@@ -17,7 +17,7 @@
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Modules.php 14335 2009-03-16 19:34:27Z matthew $
+ * @version    $Id: Modules.php 14896 2009-04-14 21:09:43Z matthew $
  */
 
 /**
@@ -29,12 +29,24 @@
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Application_Resource_Modules extends Zend_Application_Resource_Base
+class Zend_Application_Resource_Modules extends Zend_Application_Resource_ResourceAbstract
 {
     /**
-     * @var array
+     * @var ArrayObject
      */
-    protected $_bootstraps = array();
+    protected $_bootstraps;
+
+    /**
+     * Constructor
+     * 
+     * @param  mixed $options 
+     * @return void
+     */
+    public function __construct($options = null)
+    {
+        $this->_bootstraps = new ArrayObject(array(), ArrayObject::ARRAY_AS_PROPS);
+        parent::__construct($options);
+    }
 
     /**
      * Initialize modules
@@ -72,12 +84,14 @@ class Zend_Application_Resource_Modules extends Zend_Application_Resource_Base
             $moduleBootstrap->bootstrap();
             $this->_bootstraps[$module] = $moduleBootstrap;
         }
+
+        return $this->_bootstraps;
     }
 
     /**
      * Get bootstraps that have been run
      * 
-     * @return void
+     * @return ArrayObject
      */
     public function getExecutedBootstraps()
     {

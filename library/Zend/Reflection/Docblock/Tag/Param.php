@@ -19,6 +19,9 @@
  * @version    $Id$
  */
 
+/** Zend_Reflection_Docblock_Tag */
+require_once 'Zend/Reflection/Docblock/Tag.php';
+
 /**
  * @category   Zend
  * @package    Zend_Reflection
@@ -27,7 +30,6 @@
  */
 class Zend_Reflection_Docblock_Tag_Param extends Zend_Reflection_Docblock_Tag
 {
-    
     /**
      * @var string
      */
@@ -39,7 +41,7 @@ class Zend_Reflection_Docblock_Tag_Param extends Zend_Reflection_Docblock_Tag
     protected $_variableName = null;
     
     /**
-     * __construct()
+     * Constructor
      *
      * @param string $tagDocblockLine
      */
@@ -48,10 +50,12 @@ class Zend_Reflection_Docblock_Tag_Param extends Zend_Reflection_Docblock_Tag
         $matches = array();
         
         if (!preg_match('#^@(\w+)\s(\w+)(?:\s(\$\S+))?(?:\s(.*))?#s', $tagDocblockLine, $matches)) {
+            require_once 'Zend/Reflection/Exception.php';
             throw new Zend_Reflection_Exception('Provided docblock line is does not contain a valid tag');
         }
         
         if ($matches[1] != 'param') {
+            require_once 'Zend/Reflection/Exception.php';
             throw new Zend_Reflection_Exception('Provided docblock line is does not contain a valid @param tag');
         }
         
@@ -68,7 +72,7 @@ class Zend_Reflection_Docblock_Tag_Param extends Zend_Reflection_Docblock_Tag
     }
     
     /**
-     * getType()
+     * Get parameter variable type
      *
      * @return string
      */
@@ -78,7 +82,7 @@ class Zend_Reflection_Docblock_Tag_Param extends Zend_Reflection_Docblock_Tag
     }
     
     /**
-     * getVariableName()
+     * Get parameter name
      *
      * @return string
      */
@@ -86,5 +90,4 @@ class Zend_Reflection_Docblock_Tag_Param extends Zend_Reflection_Docblock_Tag
     {
         return $this->_variableName;
     }
-    
 }

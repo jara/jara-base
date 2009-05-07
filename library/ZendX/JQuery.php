@@ -17,8 +17,13 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: JQuery.php 14486 2009-03-25 18:13:57Z beberlei $
+ * @version     $Id: JQuery.php 15040 2009-04-20 21:13:48Z beberlei $
  */
+
+/**
+ * @see Zend_Json
+ */
+require_once "Zend/Json.php";
 
 /**
  * jQuery Global Class holding constants and static convienience methods.
@@ -49,6 +54,12 @@ class ZendX_JQuery
      * @const string Base path to CDN
      */
     const CDN_BASE_GOOGLE = 'http://ajax.googleapis.com/ajax/libs/jquery/';
+
+    /**
+     * @see http://code.google.com/apis/ajaxlibs/documentation/index.html#jquery
+     * @const string Base path to CDN
+     */
+    const CDN_BASE_GOOGLE_SSL = 'https://ajax.googleapis.com/ajax/libs/jquery/';
 
     /**
      * Always uses compressed version, because this is assumed to be the use case

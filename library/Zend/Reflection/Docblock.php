@@ -32,7 +32,6 @@ require_once 'Zend/Reflection/Docblock/Tag.php';
  */
 class Zend_Reflection_Docblock implements Reflector
 {
-    
     /**
      * @var Reflector
      */
@@ -42,7 +41,7 @@ class Zend_Reflection_Docblock implements Reflector
      * @var int
      */
     protected $_startLine = null;
-    protected $_endLine = null;
+    protected $_endLine   = null;
     /**#@-*/
     
     /**
@@ -71,25 +70,31 @@ class Zend_Reflection_Docblock implements Reflector
     protected $_tags = array();
     
     /**
-     * export()
+     * Export reflection
      *
+     * Reqired by the Reflector interface.
+     *
+     * @todo   What should this do?
+     * @return void
      */
     public static function export()
     {
-        // reqired by the reflector interface
     }
     
     /**
-     * __toString()
+     * Serialize to string
      *
+     * Required by the Reflector interface
+     *
+     * @todo   What should this return?
+     * @return string
      */
     public function __toString()
     {
-        // required by the reflector interface
     }
     
     /**
-     * __construct()
+     * Constructor
      *
      * @param Reflector|string $commentOrReflector
      */
@@ -98,6 +103,7 @@ class Zend_Reflection_Docblock implements Reflector
         if ($commentOrReflector instanceof Reflector) {
             $this->_reflector = $commentOrReflector;
             if (!method_exists($commentOrReflector, 'getDocComment')) {
+                require_once 'Zend/Reflection/Exception.php';
                 throw new Zend_Reflection_Exception('Reflector must contain method "getDocComment"');
             }
             $docComment = $commentOrReflector->getDocComment();
@@ -110,11 +116,13 @@ class Zend_Reflection_Docblock implements Reflector
         } elseif (is_string($commentOrReflector)) {
             $docComment = $commentOrReflector;
         } else {
-            throw new Zend_Reflection_Exception(get_class($this) . ' must have a (string) DocComment or a Reflector in the constructor.');
+            require_once 'Zend/Reflection/Exception.php';
+            throw new Zend_Reflection_Exception(get_class($this) . ' must have a (string) DocComment or a Reflector in the constructor');
         }
         
         if ($docComment == '') {
-            throw new Zend_Reflection_Exception('DocComment cannot be empty.');
+            require_once 'Zend/Reflection/Exception.php';
+            throw new Zend_Reflection_Exception('DocComment cannot be empty');
         }
         
         $this->_docComment = $docComment;
@@ -122,7 +130,7 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getContents()
+     * Retrieve contents of docblock
      *
      * @return string
      */
@@ -132,7 +140,7 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getStartLine()
+     * Get start line (position) of docblock
      *
      * @return int
      */
@@ -142,7 +150,7 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getEndLine()
+     * Get last line (position) of docblock
      *
      * @return int
      */
@@ -152,7 +160,7 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getShortDescription()
+     * Get docblock short description
      *
      * @return string
      */
@@ -162,7 +170,7 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getLongDescription()
+     * Get docblock long description
      *
      * @return string
      */
@@ -172,9 +180,9 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * hasTag()
+     * Does the docblock contain the given annotation tag?
      *
-     * @param string $name
+     * @param  string $name
      * @return bool
      */
     public function hasTag($name)
@@ -188,10 +196,10 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getTag()
+     * Retrieve the given docblock tag
      *
-     * @param string  $name
-     * @return Zend_Reflection_Docblock_Tag
+     * @param  string $name
+     * @return Zend_Reflection_Docblock_Tag|false
      */
     public function getTag($name)
     {
@@ -205,7 +213,7 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * getTags()
+     * Get all docblock annotation tags
      *
      * @param string $filter
      * @return array Array of Zend_Reflection_Docblock_Tag
@@ -226,10 +234,9 @@ class Zend_Reflection_Docblock implements Reflector
     }
     
     /**
-     * _parse()
-     * 
-     * This method does the work of parsing docblocks out of a string
+     * Parse the docblock
      *
+     * @return void
      */
     protected function _parse()
     {
@@ -270,8 +277,6 @@ class Zend_Reflection_Docblock implements Reflector
         }
 
         $this->_shortDescription = rtrim($this->_shortDescription);
-        $this->_longDescription = rtrim($this->_longDescription);
+        $this->_longDescription  = rtrim($this->_longDescription);
     }
-    
-    
 }

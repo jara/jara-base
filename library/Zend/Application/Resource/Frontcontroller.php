@@ -17,13 +17,8 @@
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Frontcontroller.php 14564 2009-03-31 16:39:50Z matthew $
+ * @version    $Id: Frontcontroller.php 14960 2009-04-17 15:52:17Z matthew $
  */
-
-/**
- * @see Zend_Application_Resource_Base
- */
-require_once 'Zend/Application/Resource/Base.php';
 
 /**
  * Front Controller resource
@@ -34,7 +29,7 @@ require_once 'Zend/Application/Resource/Base.php';
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resource_Base
+class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resource_ResourceAbstract
 {
     /**
      * @var Zend_Controller_Front
@@ -97,15 +92,29 @@ class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resourc
                     }
                     break;
 
+                case 'throwexceptions':
+                    $front->throwExceptions((bool) $value);
+                    break;
+
+                case 'actionhelperpaths':
+                    if (is_array($value)) {
+                        foreach ($value as $helperPrefix => $helperPath) {
+                            Zend_Controller_Action_HelperBroker::addPath($helperPath, $helperPrefix);
+                        }
+                    }
+                    break;
+
                 default:
                     $front->setParam($key, $value);
                     break;
             }
         }
-        
+
         if (null !== ($bootstrap = $this->getBootstrap())) {
             $this->getBootstrap()->frontController = $front;
         }
+
+        return $front;
     }
 
     /**

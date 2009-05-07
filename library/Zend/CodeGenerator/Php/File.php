@@ -76,6 +76,25 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
      * @var string
      */
     protected $_body = null;
+
+    public static function registerFileCodeGenerator(Zend_CodeGenerator_Php_File $fileCodeGenerator, $fileName = null)
+    {
+        if ($fileName == null) {
+            $fileName = $fileCodeGenerator->getFilename();
+        }
+        
+        if ($fileName == '') {
+            require_once 'Zend/CodeGenerator/Php/Exception.php';
+            throw new Zend_CodeGenerator_Php_Exception('FileName does not exist.');
+        }
+        
+        // cannot use realpath since the file might not exist, but we do need to have the index
+        // in the same DIRECTORY_SEPARATOR that realpath would use:
+        $fileName = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $fileName);
+        
+        self::$_fileCodeGenerators[$fileName] = $fileCodeGenerator;
+        
+    }
     
     /**
      * fromReflectedFilePath() - use this if you intend on generating code generation objects based on the same file.
@@ -86,7 +105,7 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
      * @param bool $includeIfNotAlreadyIncluded
      * @return Zend_CodeGenerator_Php_File
      */
-    public static function fromReflectedFilePath($filePath, $usePreviousCodeGeneratorIfItExists = true, $includeIfNotAlreadyIncluded = true)
+    public static function fromReflectedFileName($filePath, $usePreviousCodeGeneratorIfItExists = true, $includeIfNotAlreadyIncluded = true)
     {
         $realpath = realpath($filePath);
         
@@ -149,7 +168,8 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
             unset($bodyLines, $bodyReturn, $classStartLine, $classEndLine);
         }
         
-        if ($docblock = $reflectionFile->getDocblock()) {
+        if (($reflectionFile->getDocComment() != '')) {
+            $docblock = $reflectionFile->getDocblock();
             $file->setDocblock(Zend_CodeGenerator_Php_Docblock::fromReflection($docblock));
             
             $bodyLines = explode("\n", $body);
@@ -172,13 +192,24 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
     }
     
     /**
-     * Set the docblock
+     * setDocblock() Set the docblock
      *
-     * @param Zend_CodeGenerator_Php_Docblock $docblock
+     * @param Zend_CodeGenerator_Php_Docblock|array|string $docblock
      * @return Zend_CodeGenerator_Php_File
      */
-    public function setDocblock(Zend_CodeGenerator_Php_Docblock $docblock) 
+    public function setDocblock($docblock) 
     {
+        if (is_string($docblock)) {
+            $docblock = array('shortDescription' => $docblock);
+        }
+        
+        if (is_array($docblock)) {
+            $docblock = new Zend_CodeGenerator_Php_Docblock($docblock);
+        } elseif (!$docblock instanceof Zend_CodeGenerator_Php_Docblock) {
+            require_once 'Zend/CodeGenerator/Php/Exception.php';
+            throw new Zend_CodeGenerator_Php_Exception('setDocblock() is expecting either a string, array or an instance of Zend_CodeGenerator_Php_Docblock');
+        }
+        
         $this->_docblock = $docblock;
         return $this;
     }
@@ -354,9 +385,15 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
             return $this->_sourceContent;
         }
         
+        $output = '';
+        
         // start with the body (if there), or open tag
-        $output = '<?php' . PHP_EOL;
-        $body   = $this->getBody();
+        if (preg_match('#(?:\s*)<\?php#', $this->getBody()) == false) {
+            $output = '<?php' . PHP_EOL;
+        }
+        
+        // if there are markers, put the body into the output
+        $body = $this->getBody();
         if (preg_match('#/\* Zend_CodeGenerator_Php_File-(.*?)Marker:#', $body)) {
             $output .= $body;
             $body    = '';
@@ -366,7 +403,7 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
         if (null !== ($docblock = $this->getDocblock())) {
             $docblock->setIndentation('');
             $regex = preg_quote(self::$_markerDocblock, '#');
-            if (preg_match('#'.$regex.'#', $body, $matches)) {
+            if (preg_match('#'.$regex.'#', $output)) {
                 $output  = preg_replace('#'.$regex.'#', $docblock->generate(), $output, 1);
             } else {
                 $output .= $docblock->generate() . PHP_EOL;
@@ -393,21 +430,36 @@ class Zend_CodeGenerator_Php_File extends Zend_CodeGenerator_Php_Abstract
             foreach ($classes as $class) {
                 $regex = str_replace('?', $class->getName(), self::$_markerClass);
                 $regex = preg_quote($regex, '#');
-                if (preg_match('#'.$regex.'#', $output, $matches)) {
+                if (preg_match('#'.$regex.'#', $output)) {
                     $output = preg_replace('#'.$regex.'#', $class->generate(), $output, 1);
                 } else {
                     $output .= $class->generate() . PHP_EOL;
                 }
             }
             
-            $output .= PHP_EOL;
         }
 
         if (!empty($body)) {
+
+            // add an extra space betwee clsses and 
+            if (!empty($classes)) {
+                $output .= PHP_EOL;
+            }
+        
             $output .= $body;
         }
 
         return $output;
+    }
+    
+    public function write()
+    {
+        if ($this->_filename == '' || !is_writable(dirname($this->_filename))) {
+            require_once 'Zend/CodeGenerator/Php/Exception.php';
+            throw new Zend_CodeGenerator_Php_Exception('This code generator object is not writable.');
+        }
+        file_put_contents($this->_filename, $this->generate());
+        return $this;
     }
     
 }

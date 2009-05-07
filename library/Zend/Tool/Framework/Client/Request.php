@@ -62,6 +62,16 @@ class Zend_Tool_Framework_Client_Request
     /**
      * @var bool
      */
+    protected $_isDebug = false;
+    
+    /**
+     * @var bool
+     */
+    protected $_isVerbose = false;
+    
+    /**
+     * @var bool
+     */
     protected $_isDispatchable = true;
 
     /**
@@ -218,6 +228,50 @@ class Zend_Tool_Framework_Client_Request
     public function isPretend()
     {
         return $this->_isPretend;
+    }
+    
+    /**
+     * setDebug()
+     *
+     * @param bool $pretend
+     * @return Zend_Tool_Framework_Client_Request
+     */
+    public function setDebug($debug)
+    {
+        $this->_isDebug = (bool) $debug;
+        return $this;
+    }
+    
+    /**
+     * isDebug() - Whether or not this is a debug enabled request
+     *
+     * @return bool
+     */
+    public function isDebug()
+    {
+        return $this->_isDebug;
+    }
+    
+    /**
+     * setVerbose()
+     *
+     * @param bool $verbose
+     * @return Zend_Tool_Framework_Client_Request
+     */
+    public function setVerbose($verbose)
+    {
+        $this->_isVerbose = (bool) $verbose;
+        return $this;
+    }
+    
+    /**
+     * isVerbose() - Whether or not this is a verbose enabled request
+     *
+     * @return bool
+     */
+    public function isVerbose()
+    {
+        return $this->_isVerbose;
     }
     
     /**

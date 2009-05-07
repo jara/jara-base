@@ -17,20 +17,20 @@
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Db.php 14563 2009-03-31 16:05:35Z matthew $
+ * @version    $Id: Db.php 14893 2009-04-14 19:28:15Z matthew $
  */
 
 /**
  * Resource for creating database adapter
  *
- * @uses       Zend_Application_Resource_Base
+ * @uses       Zend_Application_Resource_ResourceAbstract
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Application_Resource_Db extends Zend_Application_Resource_Base
+class Zend_Application_Resource_Db extends Zend_Application_Resource_ResourceAbstract
 {
     /**
      * Adapter to use
@@ -140,7 +140,7 @@ class Zend_Application_Resource_Db extends Zend_Application_Resource_Base
     }
     
     /**
-     * Defined by Zend_Application_Resource_IResource
+     * Defined by Zend_Application_Resource_Resource
      *
      * @return void
      */
@@ -150,6 +150,7 @@ class Zend_Application_Resource_Db extends Zend_Application_Resource_Base
             if ($this->isDefaultTableAdapter()) {
                 Zend_Db_Table::setDefaultAdapter($db);
             }
+            return $db;
         }
     }
 }

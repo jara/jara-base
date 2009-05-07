@@ -87,37 +87,56 @@ class Zend_Tool_Framework_Client_Console
     }
 
     /**
-     * _init() - Tasks processed before the constructor
+     * getName() - return the name of the client, in this case 'console'
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'console';
+    }
+    
+    /**
+     * _init() - Tasks processed before the constructor, generally setting up objects to use
      *
      */
     protected function _preInit()
     {
         // support the changing of the current working directory, necessary for some providers
-        if (isset($_ENV['PWD'])) {
-            chdir($_ENV['PWD']);
+        if (isset($_ENV['ZEND_TOOL_CURRENT_WORKING_DIRECTORY'])) {
+            chdir($_ENV['ZEND_TOOL_CURRENT_WORKING_DIRECTORY']);
         }
         
         // support setting the loader from the environment
         if (isset($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS']) && Zend_Loader::loadClass($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])) {
             $this->_registry->setLoader(new $_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS']);
         }
-        
-        // setup the content decorator
-        require_once 'Zend/Tool/Framework/Client/Response.php';
-        $response = new Zend_Tool_Framework_Client_Response();
-        $response->addContentDecorator(new Zend_Tool_Framework_Client_Response_ContentDecorator_Separator());
-        $response->setDefaultDecoratorOptions(array('separator' => true));
-        $this->_registry->setResponse($response);
+
+        return;
     }
 
     /**
-     * _preDispatch() - Tasks handed after construction but before dispatching
+     * _preDispatch() - Tasks handed after initialization but before dispatching
      *
      */
     protected function _preDispatch()
     {
-        $optParser = new Zend_Tool_Framework_Client_Console_ArgumentParser($_SERVER['argv'], $this->_registry);
-        $optParser->parse();
+        $response = $this->_registry->getResponse();
+            
+        if (function_exists('posix_isatty')) {
+            require_once 'Zend/Tool/Framework/Client/Console/ResponseDecorator/Colorizer.php';
+            $response->addContentDecorator(new Zend_Tool_Framework_Client_Console_ResponseDecorator_Colorizer());
+        }
+
+        $response->addContentDecorator(new Zend_Tool_Framework_Client_Response_ContentDecorator_Separator())
+            ->setDefaultDecoratorOptions(array('separator' => true));
+        
+        $optParser = new Zend_Tool_Framework_Client_Console_ArgumentParser();
+        $optParser->setArguments($_SERVER['argv'])
+            ->setRegistry($this->_registry)
+            ->parse();
+            
+        return;
     }
 
     /**
@@ -126,13 +145,22 @@ class Zend_Tool_Framework_Client_Console
      */
     protected function _postDispatch()
     {
-        if ($this->_registry->getResponse()->isException()) {
-            echo PHP_EOL 
-               . 'An error has occured:' 
-               . PHP_EOL
-               . $this->_registry->getResponse()->getException()->getMessage() 
-               . PHP_EOL;
+        $request = $this->_registry->getRequest();
+        $response = $this->_registry->getResponse();
+        
+        if ($response->isException()) {
+            require_once 'Zend/Tool/Framework/Client/Console/HelpSystem.php';
+            $helpSystem = new Zend_Tool_Framework_Client_Console_HelpSystem();
+            $helpSystem->setRegistry($this->_registry)
+                ->respondWithErrorMessage($response->getException()->getMessage())
+                ->respondWithSpecialtyAndParamHelp(
+                    $request->getProviderName(),
+                    $request->getActionName()
+                    );
         }
+        
+        echo PHP_EOL;
+        return;
     }
 
     /**
@@ -146,7 +174,7 @@ class Zend_Tool_Framework_Client_Console
     {
         fwrite(STDOUT, $inputRequest->getContent() . PHP_EOL . 'zf> ');
         $inputContent = fgets(STDIN);
-        return substr($inputContent, 0, -1); // remove the return from the end of the string
+        return rtrim($inputContent); // remove the return from the end of the string
     }
     
     /**
@@ -159,9 +187,17 @@ class Zend_Tool_Framework_Client_Console
      */
     public function handleInteractiveOutput($output)
     {
-        echo $output . PHP_EOL;
+        echo $output;
     }
     
+    /**
+     * getMissingParameterPromptString() 
+     *
+     * @param Zend_Tool_Framework_Provider_Interface $provider
+     * @param Zend_Tool_Framework_Action_Interface $actionInterface
+     * @param string $missingParameterName
+     * @return string
+     */
     public function getMissingParameterPromptString(Zend_Tool_Framework_Provider_Interface $provider, Zend_Tool_Framework_Action_Interface $actionInterface, $missingParameterName)
     {
         return 'Please provide a value for $' . $missingParameterName;

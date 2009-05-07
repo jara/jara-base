@@ -17,7 +17,7 @@
  * @subpackage  View
  * @copyright   Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license     http://framework.zend.com/license/new-bsd     New BSD License
- * @version     $Id: Form.php 11952 2008-10-14 17:04:46Z beberlei $
+ * @version     $Id: Form.php 14815 2009-04-10 09:32:11Z beberlei $
  */
 
 require_once "Zend/Form.php";
@@ -42,7 +42,7 @@ class ZendX_JQuery_Form extends Zend_Form
     {
         $this->addPrefixPath('ZendX_JQuery_Form_Decorator', 'ZendX/JQuery/Form/Decorator', 'decorator')
              ->addPrefixPath('ZendX_JQuery_Form_Element', 'ZendX/JQuery/Form/Element', 'element')
-             ->addElementPrefixPath('ZendX_Dojo_Form_Decorator', 'ZendX/JQuery/Form/Decorator', 'decorator')
+             ->addElementPrefixPath('ZendX_JQuery_Form_Decorator', 'ZendX/JQuery/Form/Decorator', 'decorator')
              ->addDisplayGroupPrefixPath('ZendX_JQuery_Form_Decorator', 'ZendX/JQuery/Form/Decorator');
         parent::__construct($options);
     }

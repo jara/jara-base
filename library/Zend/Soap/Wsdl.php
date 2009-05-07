@@ -16,7 +16,7 @@
  * @package    Zend_Soap
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Wsdl.php 13725 2009-01-21 11:05:20Z beberlei $
+ * @version    $Id: Wsdl.php 14917 2009-04-15 15:40:17Z beberlei $
  */
 
 require_once "Zend/Soap/Wsdl/Strategy/Interface.php";

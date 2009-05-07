@@ -15,7 +15,7 @@
  * @package    Zend_Controller
  * @subpackage Router
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Route.php 14573 2009-04-01 08:06:16Z dasprid $
+ * @version    $Id: Route.php 15174 2009-04-26 22:01:44Z dasprid $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -198,7 +198,7 @@ class Zend_Controller_Router_Route extends Zend_Controller_Router_Route_Abstract
      * @param string $path Path used to match against this routing map
      * @return array|false An array of assigned values or a false on a mismatch
      */
-    public function match($path)
+    public function match($path, $partial = false)
     {
         if ($this->_isTranslated) {
             $translateMessages = $this->getTranslator()->getMessages();
@@ -208,7 +208,7 @@ class Zend_Controller_Router_Route extends Zend_Controller_Router_Route_Abstract
         $values          = array();
         $matchedPath     = '';
         
-        if (!$this->isPartial()) {
+        if (!$partial) {
             $path = trim($path, $this->_urlDelimiter);
         }
         
@@ -218,7 +218,7 @@ class Zend_Controller_Router_Route extends Zend_Controller_Router_Route_Abstract
             foreach ($path as $pos => $pathPart) {
                 // Path is longer than a route, it's not a match
                 if (!array_key_exists($pos, $this->_parts)) {
-                    if ($this->isPartial()) {
+                    if ($partial) {
                         break;
                     } else {
                         return false;
@@ -408,6 +408,16 @@ class Zend_Controller_Router_Route extends Zend_Controller_Router_Route_Abstract
      */
     public function getDefaults() {
         return $this->_defaults;
+    }
+    
+    /**
+     * Get all variables which are used by the route
+     *
+     * @return array
+     */
+    public function getVariables()
+    {
+        return $this->_variables;
     }
 
     /**

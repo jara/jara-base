@@ -117,9 +117,7 @@ class Zend_Tool_Project_Context_Zf_ControllerFile extends Zend_Tool_Project_Cont
         $className = $filter->filter($this->_controllerName) . 'Controller';
         
         $codeGenFile = new Zend_CodeGenerator_Php_File(array(
-            'requiredFiles' => array(
-                'Zend/Controller/Action.php'
-            ),
+            'fileName' => $this->getPath(),
             'classes' => array(
                 new Zend_CodeGenerator_Php_Class(array(
                     'name' => $className,
@@ -138,9 +136,7 @@ class Zend_Tool_Project_Context_Zf_ControllerFile extends Zend_Tool_Project_Cont
         if ($className == 'ErrorController') {
             
             $codeGenFile = new Zend_CodeGenerator_Php_File(array(
-                'requiredFiles' => array(
-                    'Zend/Controller/Action.php'
-                    ),
+                'fileName' => $this->getPath(),
                 'classes' => array(
                     new Zend_CodeGenerator_Php_Class(array(
                         'name' => $className,
@@ -177,6 +173,8 @@ EOS
 
         }
         
+        // store the generator into the registry so that the addAction command can use the same object later
+        Zend_CodeGenerator_Php_File::registerFileCodeGenerator($codeGenFile); // REQUIRES filename to be set
         return $codeGenFile->generate();
     }
     
@@ -187,8 +185,9 @@ EOS
      */
     public function addAction($actionName)
     {
-        require_once $this->getPath();
-        $codeGenFile = Zend_CodeGenerator_Php_File::fromReflection(new Zend_Reflection_File($this->getPath()));
+        //require_once $this->getPath();
+        //$codeGenFile = Zend_CodeGenerator_Php_File::fromReflection(new Zend_Reflection_File($this->getPath()));
+        $codeGenFile = Zend_CodeGenerator_Php_File::fromReflectedFileName($this->getPath());
         $codeGenFileClasses = $codeGenFile->getClasses();
         $class = array_shift($codeGenFileClasses);
         $class->setMethod(array('name' => $actionName . 'Action', 'body' => '        // action body here'));

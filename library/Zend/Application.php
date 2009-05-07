@@ -16,7 +16,7 @@
  * @package    Zend_Application
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Application.php 14712 2009-04-07 04:05:03Z matthew $
+ * @version    $Id: Application.php 15151 2009-04-25 17:46:24Z matthew $
  */
 
 /**
@@ -37,7 +37,7 @@ class Zend_Application
     /**
      * Bootstrap
      * 
-     * @var Zend_Application_Bootstrap_Base
+     * @var Zend_Application_Bootstrap_BootstrapAbstract
      */
     protected $_bootstrap;
 
@@ -272,21 +272,25 @@ class Zend_Application
     /**
      * Get bootstrap object
      * 
-     * @return Zend_Application_Bootstrap_Base
+     * @return Zend_Application_Bootstrap_BootstrapAbstract
      */
     public function getBootstrap()
     {
+        if (null === $this->_bootstrap) {
+            $this->_bootstrap = new Zend_Application_Bootstrap_Bootstrap($this);
+        }
         return $this->_bootstrap;
     }
 
     /**
      * Bootstrap application
      * 
-     * @return void
+     * @return Zend_Application
      */
     public function bootstrap()
     {
         $this->getBootstrap()->bootstrap();
+        return $this;
     }
 
     /**

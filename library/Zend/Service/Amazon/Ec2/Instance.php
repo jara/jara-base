@@ -112,7 +112,7 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
         // set / override the defualt optoins if they are not passed into the array;
         $options = array_merge($_defaultOptions, $options);
 
-        if(!$options['imageId']) {
+        if(!isset($options['imageId'])) {
             require_once 'Zend/Service/Amazon/Ec2/Exception.php';
             throw new Zend_Service_Amazon_Ec2_Exception('No Image Id Provided');
         }
@@ -124,7 +124,7 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
         $params['MinCount'] = $options['minCount'];
         $params['MaxCount'] = $options['maxCount'];
 
-        if($options['keyName']) {
+        if(isset($options['keyName'])) {
             $params['KeyName'] = $options['keyName'];
         }
 
@@ -132,31 +132,31 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
             foreach($options['securityGroup'] as $k=>$name) {
                 $params['SecurityGroup.' . ($k+1)] = $name;
             }
-        } elseif($options['securityGroup']) {
+        } elseif(isset($options['securityGroup'])) {
             $params['SecurityGroup.1'] = $options['securityGroup'];
         }
 
-        if($options['userData']) {
+        if(isset($options['userData'])) {
             $params['UserData'] = base64_encode($options['userData']);
         }
 
-        if($options['instanceType']) {
+        if(isset($options['instanceType'])) {
             $params['InstanceType'] = $options['instanceType'];
         }
 
-        if($options['placement']) {
+        if(isset($options['placement'])) {
             $params['Placement.AvailabilityZone'] = $options['placement'];
         }
 
-        if($options['kernelId']) {
+        if(isset($options['kernelId'])) {
             $params['KernelId'] = $options['kernelId'];
         }
 
-        if($options['ramdiskId']) {
+        if(isset($options['ramdiskId'])) {
             $params['RamdiskId'] = $options['ramdiskId'];
         }
 
-        if($options['blockDeviceVirtualName'] && $options['blockDeviceName']) {
+        if(isset($options['blockDeviceVirtualName']) && isset($options['blockDeviceName'])) {
             $params['BlockDeviceMapping.n.VirtualName'] = $options['blockDeviceVirtualName'];
             $params['BlockDeviceMapping.n.DeviceName'] = $options['blockDeviceName'];
         }
@@ -215,8 +215,10 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
      * This interval is usually less than one hour.
      *
      * @param string|array $instaceId       Set of instances IDs of which to get the status.
+     * @param boolean                       Ture to ignore Terminated Instances.
+     * @return array
      */
-    public function describe($instanceId)
+    public function describe($instanceId = null, $ignoreTerminated = false)
     {
         $params = array();
         $params['Action'] = 'DescribeInstances';
@@ -248,7 +250,10 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
             unset($gs);
 
             $is = $xpath->query('ec2:instancesSet/ec2:item', $node);
+            $return['instances'] = array();
             foreach($is as $is_node) {
+                if($xpath->evaluate('string(ec2:instanceState/ec2:code/text())', $is_node) == 48 && $ignoreTerminated) continue;
+
                 $item = array();
 
                 $item['instanceId'] = $xpath->evaluate('string(ec2:instanceId/text())', $is_node);
@@ -270,6 +275,32 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
                 unset($is_node);
             }
             unset($is);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Returns information about instances that you own that were started from
+     * a specific imageId
+     *
+     * Recently terminated instances might appear in the returned results.
+     * This interval is usually less than one hour.
+     *
+     * @param string $imageId               The imageId used to start the Instance.
+     * @param boolean                       Ture to ignore Terminated Instances.
+     * @return array
+     */
+    public function describeByImageId($imageId, $ignoreTerminated = false)
+    {
+        $arrInstances = $this->describe(null, $ignoreTerminated);
+
+        $return = array();
+
+        foreach($arrInstances['instances'] as $k => $instance) {
+            if($instance['imageId'] !== $imageId) continue;
+            $instance['groupSet'] = $arrInstances['groupSet'][$k];
+            $return[] = $instance;
         }
 
         return $return;
@@ -380,7 +411,7 @@ class Zend_Service_Amazon_Ec2_Instance extends Zend_Service_Amazon_Ec2_Abstract
      * Returns true if the specified product code is attached to the specified instance.
      * The operation returns false if the product code is not attached to the instance.
      *
-     * The ConfirmProductInstance operation can only be executed by the owner of the AMI.
+     * The confirmProduct operation can only be executed by the owner of the AMI.
      * This feature is useful when an AMI owner is providing support and wants to
      * verify whether a user's instance is eligible.
      *

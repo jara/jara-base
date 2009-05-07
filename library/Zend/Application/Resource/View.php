@@ -17,20 +17,20 @@
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: View.php 14329 2009-03-16 16:20:26Z matthew $
+ * @version    $Id: View.php 14893 2009-04-14 19:28:15Z matthew $
  */
 
 /**
  * Resource for settings view options
  *
- * @uses       Zend_Application_Resource_Base
+ * @uses       Zend_Application_Resource_ResourceAbstract
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Application_Resource_View extends Zend_Application_Resource_Base
+class Zend_Application_Resource_View extends Zend_Application_Resource_ResourceAbstract
 {
     /**
      * @var Zend_View_Interface
@@ -38,7 +38,7 @@ class Zend_Application_Resource_View extends Zend_Application_Resource_Base
     protected $_view;
 
     /**
-     * Defined by Zend_Application_Resource_IResource
+     * Defined by Zend_Application_Resource_Resource
      *
      * @return void
      */
@@ -49,6 +49,7 @@ class Zend_Application_Resource_View extends Zend_Application_Resource_Base
         $viewRenderer = new Zend_Controller_Action_Helper_ViewRenderer();
         $viewRenderer->setView($view);
         Zend_Controller_Action_HelperBroker::addHelper($viewRenderer);
+        return $view;
     }
 
     /**
