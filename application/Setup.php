@@ -95,7 +95,7 @@ class Setup {
     private static function setupAutoload() {
         require_once 'Zend/Loader/Autoloader.php';
 		$autoloader = Zend_Loader_Autoloader::getInstance(); 
-		$autoloader->registerNamespace('Jara_'); 
+		$autoloader->setFallbackAutoloader(true);
     }
 
 }

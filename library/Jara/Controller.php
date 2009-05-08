@@ -17,7 +17,7 @@ abstract class Jara_Controller extends Zend_Controller_Action {
 	 */
 	public function init() {
 		parent::init();
-		$this->view->baseUrl = $this->getFrontController()->getBaseUrl();
+		$this->view->baseUrl = str_replace('/index.php', '', $this->getFrontController()->getBaseUrl());
 	}
 	
 }
