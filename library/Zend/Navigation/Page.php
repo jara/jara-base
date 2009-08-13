@@ -14,8 +14,9 @@
  *
  * @category  Zend
  * @package   Zend_Navigation
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Page.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -28,7 +29,7 @@ require_once 'Zend/Navigation/Container.php';
  *
  * @category  Zend
  * @package   Zend_Navigation
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Navigation_Page extends Zend_Navigation_Container
@@ -190,8 +191,10 @@ abstract class Zend_Navigation_Page extends Zend_Navigation_Container
                         break;
                 }
 
-                require_once 'Zend/Loader.php';
-                @Zend_Loader::loadClass($type);
+                if (!class_exists($type)) {
+                    require_once 'Zend/Loader.php';
+                    @Zend_Loader::loadClass($type);
+                }
 
                 $page = new $type($options);
                 if (!$page instanceof Zend_Navigation_Page) {

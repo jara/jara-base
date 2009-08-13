@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Controller
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -41,9 +41,9 @@ require_once 'Zend/XmlRpc/Fault.php';
  *
  * @category Zend
  * @package  Zend_XmlRpc
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version $Id: Request.php 13223 2008-12-14 11:21:31Z thomas $
+ * @version $Id: Request.php 16208 2009-06-21 19:19:26Z thomas $
  */
 class Zend_XmlRpc_Request
 {

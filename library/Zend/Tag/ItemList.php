@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tag
  * @subpackage ItemList
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ItemList.php 14992 2009-04-18 20:42:11Z dasprid $
+ * @version    $Id: ItemList.php 16209 2009-06-21 19:20:34Z thomas $
  */
 
 /**
@@ -28,7 +28,7 @@ require_once 'Zend/Tag/Taggable.php';
 /**
  * @category   Zend
  * @package    Zend_Tag
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tag_ItemList implements Countable, SeekableIterator, ArrayAccess
@@ -68,37 +68,44 @@ class Zend_Tag_ItemList implements Countable, SeekableIterator, ArrayAccess
         // Re-index the array
         $values = array_values($values);
         
-        // Calculate min- and max-weight
-        $minWeight = null;
-        $maxWeight = null;
-        
-        foreach ($this->_items as $item) {
-            if ($minWeight === null && $maxWeight === null) {
-                $minWeight = $item->getWeight();
-                $maxWeight = $item->getWeight();
-            } else {
-                $minWeight = min($minWeight, $item->getWeight());
-                $maxWeight = max($maxWeight, $item->getWeight());                
+        // If just a single value is supplied simply assign it to to all tags
+        if (count($values) === 1) {
+            foreach ($this->_items as $item) {
+                $item->setParam('weightValue', $values[0]);
             }
-        }
-        
-        // Calculate the thresholds
-        $steps      = count($values);
-        $delta      = ($maxWeight - $minWeight) / ($steps - 1);
-        $thresholds = array();
-        
-        for ($i = 0; $i < $steps; $i++) {
-            $thresholds[$i] = floor(100 * log(($minWeight + $i * $delta) + 2));
-        }
-
-        // Then assign the weight values 
-        foreach ($this->_items as $item) {
-            $threshold = floor(100 * log($item->getWeight() + 2));
-             
+        } else {
+            // Calculate min- and max-weight
+            $minWeight = null;
+            $maxWeight = null;
+            
+            foreach ($this->_items as $item) {
+                if ($minWeight === null && $maxWeight === null) {
+                    $minWeight = $item->getWeight();
+                    $maxWeight = $item->getWeight();
+                } else {
+                    $minWeight = min($minWeight, $item->getWeight());
+                    $maxWeight = max($maxWeight, $item->getWeight());                
+                }
+            }
+            
+            // Calculate the thresholds
+            $steps      = count($values);
+            $delta      = ($maxWeight - $minWeight) / ($steps - 1);
+            $thresholds = array();
+            
             for ($i = 0; $i < $steps; $i++) {
-                if ($threshold <= $thresholds[$i]) {
-                    $item->setParam('weightValue', $values[$i]);
-                    break;
+                $thresholds[$i] = floor(100 * log(($minWeight + $i * $delta) + 2));
+            }
+    
+            // Then assign the weight values 
+            foreach ($this->_items as $item) {
+                $threshold = floor(100 * log($item->getWeight() + 2));
+                 
+                for ($i = 0; $i < $steps; $i++) {
+                    if ($threshold <= $thresholds[$i]) {
+                        $item->setParam('weightValue', $values[$i]);
+                        break;
+                    }
                 }
             }
         }
@@ -190,7 +197,7 @@ class Zend_Tag_ItemList implements Countable, SeekableIterator, ArrayAccess
      * Get the value of an offset
      *
      * @param  mixed $offset
-     * @return Zend_Tag_IItem
+     * @return Zend_Tag_Taggable
      */
     public function offsetGet($offset) {
         return $this->_items[$offset];
@@ -200,7 +207,7 @@ class Zend_Tag_ItemList implements Countable, SeekableIterator, ArrayAccess
      * Append a new item
      *
      * @param  mixed          $offset
-     * @param  Zend_Tag_IItem $item
+     * @param  Zend_Tag_Taggable $item
      * @throws OutOfBoundsException When item does not implement Zend_Tag_Taggable
      * @return void
      */

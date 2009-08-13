@@ -14,8 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Json
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Json.php 16541 2009-07-07 06:59:03Z bkarwin $
  */
 
 /**
@@ -32,7 +33,7 @@ require_once 'Zend/Json/Expr.php';
  * @category   Zend
  * @package    Zend_Json
  * @uses       Zend_Json_Expr
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Json
@@ -128,12 +129,13 @@ class Zend_Json
         if (count($javascriptExpressions) > 0) {
             $count = count($javascriptExpressions);
             for($i = 0; $i < $count; $i++) {
-                $key      = $javascriptExpressions[$i]['key'];
                 $magicKey = $javascriptExpressions[$i]['magicKey'];
                 $value    = $javascriptExpressions[$i]['value'];
+
                 $encodedResult = str_replace(
-                    '"' . $key . '":"' . $magicKey . '"',
-                    '"' . $key . '":' . $value,
+                    //instead of replacing "key:magicKey", we replace directly magicKey by value because "key" never changes.
+                    '"' . $magicKey . '"',
+                    $value,
                     $encodedResult
                 );
             }
@@ -159,12 +161,13 @@ class Zend_Json
     protected static function _recursiveJsonExprFinder(
         &$value, array &$javascriptExpressions, $currentKey = null
     ) {
-        if ($value instanceof Zend_Json_Expr) {
+         if ($value instanceof Zend_Json_Expr) {
             // TODO: Optimize with ascii keys, if performance is bad
             $magicKey = "____" . $currentKey . "_" . (count($javascriptExpressions));
             $javascriptExpressions[] = array(
-                "key"      => Zend_Json_Encoder::encodeUnicodeString($currentKey),
-                "magicKey" => Zend_Json_Encoder::encodeUnicodeString($magicKey),
+
+                //if currentKey is integer, encodeUnicodeString call is not required.
+                "magicKey" => (is_int($currentKey)) ? $magicKey : Zend_Json_Encoder::encodeUnicodeString($magicKey),
                 "value"    => $value->__toString(),
             );
             $value = $magicKey;

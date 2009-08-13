@@ -12,10 +12,11 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
+ * @category   Zend
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Module.php 15171 2009-04-26 21:43:36Z dasprid $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Module.php 16541 2009-07-07 06:59:03Z bkarwin $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +30,7 @@ require_once 'Zend/Controller/Router/Route/Abstract.php';
  *
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @see        http://manuals.rubyonrails.com/read/chapter/65
  */
@@ -78,8 +79,13 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
      */
     public static function getInstance(Zend_Config $config)
     {
-        $defs = ($config->defaults instanceof Zend_Config) ? $config->defaults->toArray() : array();
-        return new self($defs);
+        $frontController = Zend_Controller_Front::getInstance();
+        
+        $defs       = ($config->defaults instanceof Zend_Config) ? $config->defaults->toArray() : array();
+        $dispatcher = $frontController->getDispatcher();
+        $request    = $frontController->getRequest();
+        
+        return new self($defs, $dispatcher, $request);
     }
 
     /**
@@ -193,7 +199,7 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
      * @param bool $reset Weither to reset the current params
      * @return string Route path with user submitted parameters
      */
-    public function assemble($data = array(), $reset = false, $encode = true)
+    public function assemble($data = array(), $reset = false, $encode = true, $partial = false)
     {
         if (!$this->_keysSet) {
             $this->_setRequestKeys();

@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: HelperAbstract.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -35,7 +36,7 @@ require_once 'Zend/View/Helper/HtmlElement.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_View_Helper_Navigation_HelperAbstract
@@ -83,6 +84,13 @@ abstract class Zend_View_Helper_Navigation_HelperAbstract
      * @var Zend_Acl
      */
     protected $_acl;
+
+    /**
+     * Wheter invisible items should be rendered by this helper
+     *
+     * @var bool
+     */
+    protected $_renderInvisible = false;
 
     /**
      * ACL role to use when iterating pages
@@ -424,6 +432,29 @@ abstract class Zend_View_Helper_Navigation_HelperAbstract
     }
 
     /**
+     * Return renderInvisible flag
+     *
+     * @return bool
+     */
+    public function getRenderInvisible()
+    {
+        return $this->_renderInvisible;
+    }
+
+    /**
+     * Render invisible items?
+     *
+     * @param  bool $renderInvisible                       [optional] boolean flag
+     * @return Zend_View_Helper_Navigation_HelperAbstract  fluent interface
+     *                                                     returns self
+     */
+    public function setRenderInvisible($renderInvisible = true)
+    {
+        $this->_renderInvisible = (bool) $renderInvisible;
+        return $this;
+    }
+
+    /**
      * Sets whether translator should be used
      *
      * Implements {@link Zend_View_Helper_Navigation_Helper::setUseTranslator()}.
@@ -654,7 +685,8 @@ abstract class Zend_View_Helper_Navigation_HelperAbstract
      * Determines whether a page should be accepted when iterating
      *
      * Rules:
-     * - If a page is not visible, it is not accepted
+     * - If a page is not visible it is not accepted, unless RenderInvisible has
+     *   been set to true.
      * - If helper has no ACL, page is accepted
      * - If helper has ACL, but no role, page is not accepted
      * - If helper has ACL and role:
@@ -675,7 +707,7 @@ abstract class Zend_View_Helper_Navigation_HelperAbstract
         // accept by default
         $accept = true;
 
-        if (!$page->isVisible(false)) {
+        if (!$page->isVisible(false) && !$this->getRenderInvisible()) {
             // don't accept invisible pages
             $accept = false;
         } elseif ($this->getUseAcl() && !$this->_acceptAcl($page)) {

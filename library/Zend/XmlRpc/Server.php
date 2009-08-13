@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Server.php 13223 2008-12-14 11:21:31Z thomas $
+ * @version    $Id: Server.php 16208 2009-06-21 19:19:26Z thomas $
  */
 
 /**
@@ -111,7 +111,7 @@ require_once 'Zend/Server/Reflection/Method.php';
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_XmlRpc_Server extends Zend_Server_Abstract

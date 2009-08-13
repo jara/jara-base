@@ -12,10 +12,11 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
+ * @category   Zend
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Route.php 1847 2006-11-23 11:36:41Z martel $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Chain.php 16971 2009-07-22 18:05:45Z mikaelkael $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -27,7 +28,7 @@ require_once 'Zend/Controller/Router/Route/Abstract.php';
  *
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Abstract
@@ -126,14 +127,15 @@ class Zend_Controller_Router_Route_Chain extends Zend_Controller_Router_Route_Ab
      */
     public function assemble($data = array(), $reset = false, $encode = false)
     {
-        $value = '';
-
+        $value     = '';
+        $numRoutes = count($this->_routes);
+        
         foreach ($this->_routes as $key => $route) {
             if ($key > 0) {
                 $value .= $this->_separators[$key];
             }
             
-            $value .= $route->assemble($data, $reset, $encode, true);
+            $value .= $route->assemble($data, $reset, $encode, (($numRoutes - 1) > $key));
             
             if (method_exists($route, 'getVariables')) {
                 $variables = $route->getVariables();

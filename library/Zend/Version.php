@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Version
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Version.php 15217 2009-04-27 22:38:06Z alexander $
+ * @version    $Id: Version.php 17534 2009-08-10 19:21:29Z alexander $
  */
 
 /**
@@ -24,7 +24,7 @@
  *
  * @category   Zend
  * @package    Zend_Version
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 final class Zend_Version
@@ -32,7 +32,7 @@ final class Zend_Version
     /**
      * Zend Framework version identification - see compareVersion()
      */
-    const VERSION = '1.8.0';
+    const VERSION = '1.9.1';
 
     /**
      * Compare the specified Zend Framework version string $version

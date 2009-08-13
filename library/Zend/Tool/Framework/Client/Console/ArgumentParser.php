@@ -17,7 +17,7 @@
  * @subpackage Framework
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: ArgumentParser.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -389,6 +389,7 @@ class Zend_Tool_Framework_Client_Console_ArgumentParser implements Zend_Tool_Fra
 
         $getoptOptions = array();
         $wordArguments = array();
+        $longParamCanonicalNames = array();
 
         $actionableMethodLongParamsMetadataReference = $actionableMethodLongParamsMetadata->getReference();
         foreach ($actionableMethodLongParamsMetadata->getValue() as $parameterNameLong => $consoleParameterNameLong) {
@@ -415,6 +416,8 @@ class Zend_Tool_Framework_Client_Console_ArgumentParser implements Zend_Tool_Fra
             $wordArguments[$parameterInfo['position']]['optional']      = $parameterInfo['optional'];
             $wordArguments[$parameterInfo['position']]['type']          = $parameterInfo['type'];
 
+            // keep a translation of console to canonical names
+            $longParamCanonicalNames[$consoleParameterNameLong] = $parameterNameLong;
         }
 
 
@@ -456,12 +459,16 @@ class Zend_Tool_Framework_Client_Console_ArgumentParser implements Zend_Tool_Fra
         $getoptParser->parse();
         foreach ($getoptParser->getOptions() as $option) {
             $value = $getoptParser->getOption($option);
-            $this->_providerOptions[$option] = $value;
-            $this->_request->setProviderParameter($option, $value);
+            $providerParamOption = $longParamCanonicalNames[$option];
+            $this->_request->setProviderParameter($providerParamOption, $value);
         }
 
+        /*
         $this->_metadataProviderOptionsLong = $actionableMethodLongParamsMetadata;
         $this->_metadataProviderOptionsShort = $actionableMethodShortParamsMetadata;
+        */
+        
+        $this->_argumentsWorking = $getoptParser->getRemainingArgs();
 
         return;
     }

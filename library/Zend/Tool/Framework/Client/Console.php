@@ -17,7 +17,7 @@
  * @subpackage Framework
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Console.php 16972 2009-07-22 18:44:24Z ralph $
  */
 
 /**
@@ -65,6 +65,16 @@ class Zend_Tool_Framework_Client_Console
 {
 
     /**
+     * @var array
+     */
+    protected $_configOptions = null;
+    
+    /**
+     * @var array
+     */
+    protected $_storageOptions = null;
+    
+    /**
      * @var Zend_Filter_Word_CamelCaseToDash
      */
     protected $_filterToClientNaming = null;
@@ -79,13 +89,25 @@ class Zend_Tool_Framework_Client_Console
      * self contained main() function.
      *
      */
-    public static function main()
+    public static function main($options = array())
     {
         ini_set('display_errors', true);
-        $cliClient = new self();
+        $cliClient = new self($options);
         $cliClient->dispatch();
     }
 
+    public function setConfigOptions($configOptions)
+    {
+        $this->_configOptions = $configOptions;
+        return $this;
+    }
+    
+    public function setStorageOptions($storageOptions)
+    {
+        $this->_storageOptions = $storageOptions;
+        return $this;
+    }
+    
     /**
      * getName() - return the name of the client, in this case 'console'
      *
@@ -102,14 +124,33 @@ class Zend_Tool_Framework_Client_Console
      */
     protected function _preInit()
     {
+        $config = $this->_registry->getConfig();
+        
+        if ($this->_configOptions != null) {
+            $config->setOptions($this->_configOptions);
+        }
+        
+        $storage = $this->_registry->getStorage();
+        
+        if ($this->_storageOptions != null && isset($this->_storageOptions['directory'])) {
+            require_once 'Zend/Tool/Framework/Client/Storage/Directory.php';
+            $storage->setAdapter(
+                new Zend_Tool_Framework_Client_Storage_Directory($this->_storageOptions['directory'])
+                );
+        }
+        
         // support the changing of the current working directory, necessary for some providers
         if (isset($_ENV['ZEND_TOOL_CURRENT_WORKING_DIRECTORY'])) {
             chdir($_ENV['ZEND_TOOL_CURRENT_WORKING_DIRECTORY']);
         }
         
         // support setting the loader from the environment
-        if (isset($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS']) && Zend_Loader::loadClass($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])) {
-            $this->_registry->setLoader(new $_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS']);
+        if (isset($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])) {
+            if (class_exists($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])
+                || Zend_Loader::loadClass($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])
+            ) {
+                $this->_registry->setLoader(new $_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS']);
+            }
         }
 
         return;
@@ -152,7 +193,7 @@ class Zend_Tool_Framework_Client_Console
             require_once 'Zend/Tool/Framework/Client/Console/HelpSystem.php';
             $helpSystem = new Zend_Tool_Framework_Client_Console_HelpSystem();
             $helpSystem->setRegistry($this->_registry)
-                ->respondWithErrorMessage($response->getException()->getMessage())
+                ->respondWithErrorMessage($response->getException()->getMessage(), $response->getException())
                 ->respondWithSpecialtyAndParamHelp(
                     $request->getProviderName(),
                     $request->getActionName()

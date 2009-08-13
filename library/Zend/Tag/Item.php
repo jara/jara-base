@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tag
  * @subpackage Item
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Item.php 14868 2009-04-12 16:38:07Z dasprid $
+ * @version    $Id: Item.php 16209 2009-06-21 19:20:34Z thomas $
  */
 
 /**
@@ -29,7 +29,7 @@ require_once 'Zend/Tag/Taggable.php';
  * @category   Zend
  * @package    Zend_Tag
  * @uses       Zend_Tag_Taggable
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tag_Item implements Zend_Tag_Taggable
@@ -121,7 +121,7 @@ class Zend_Tag_Item implements Zend_Tag_Taggable
     }
     
     /**
-     * Defined by Zend_Tag_IItem
+     * Defined by Zend_Tag_Taggable
      *
      * @return string
      */
@@ -149,7 +149,7 @@ class Zend_Tag_Item implements Zend_Tag_Taggable
     }
     
     /**
-     * Defined by Zend_Tag_IItem
+     * Defined by Zend_Tag_Taggable
      *
      * @return float
      */
@@ -192,7 +192,7 @@ class Zend_Tag_Item implements Zend_Tag_Taggable
     }
     
     /**
-     * Defined by Zend_Tag_IItem
+     * Defined by Zend_Tag_Taggable
      *
      * @param  string $name
      * @param  mixed  $value
@@ -205,7 +205,7 @@ class Zend_Tag_Item implements Zend_Tag_Taggable
     }
     
     /**
-     * Defined by Zend_Tag_IItem
+     * Defined by Zend_Tag_Taggable
      *
      * @param  string $name
      * @return mixed

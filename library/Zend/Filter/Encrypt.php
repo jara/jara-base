@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: $
+ * @version    $Id: Encrypt.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -34,7 +34,7 @@ require_once 'Zend/Loader.php';
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Filter_Encrypt implements Zend_Filter_Interface
@@ -89,7 +89,10 @@ class Zend_Filter_Encrypt implements Zend_Filter_Interface
             $adapter = 'Zend_Filter_Encrypt_' . ucfirst($adapter);
         }
 
-        Zend_Loader::loadClass($adapter);
+        if (!class_exists($adapter)) {
+            Zend_Loader::loadClass($adapter);
+        }
+
         $this->_adapter = new $adapter($options);
         if (!$this->_adapter instanceof Zend_Filter_Encrypt_Interface) {
             require_once 'Zend/Filter/Exception.php';

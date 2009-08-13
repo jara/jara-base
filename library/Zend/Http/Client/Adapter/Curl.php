@@ -16,8 +16,8 @@
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @version    $Id: Curl.php 14379 2009-03-19 14:57:23Z matthew $
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Curl.php 17118 2009-07-26 09:41:41Z shahar $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -34,7 +34,7 @@ require_once 'Zend/Http/Client/Adapter/Interface.php';
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interface
@@ -62,7 +62,7 @@ class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interfac
 
     /**
      * List of cURL options that should never be overwritten
-     * 
+     *
      * @var array
      */
     protected $_invalidOverwritableCurlOptions = array(
@@ -110,18 +110,39 @@ class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interfac
      * Set the configuration array for the adapter
      *
      * @throws Zend_Http_Client_Adapter_Exception
-     * @param array $config
+     * @param  Zend_Config | array $config
      * @return Zend_Http_Client_Adapter_Curl
      */
     public function setConfig($config = array())
     {
-        if (!is_array($config)) {
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+
+        } elseif (! is_array($config)) {
             require_once 'Zend/Http/Client/Adapter/Exception.php';
-            throw new Zend_Http_Client_Adapter_Exception('Http Adapter configuration expects an array, ' . gettype($config) . ' recieved.');
+            throw new Zend_Http_Client_Adapter_Exception(
+                'Array or Zend_Config object expected, got ' . gettype($config)
+            );
+        }
+
+        if(isset($config['proxy_user']) && isset($config['proxy_pass'])) {
+            $this->setCurlOption(CURLOPT_PROXYUSERPWD, $config['proxy_user'].":".$config['proxy_pass']);
+            unset($config['proxy_user'], $config['proxy_pass']);
         }
 
         foreach ($config as $k => $v) {
-            $this->_config[strtolower($k)] = $v;
+            $option = strtolower($k);
+            switch($option) {
+                case 'proxy_host':
+                    $this->setCurlOption(CURLOPT_PROXY, $v);
+                    break;
+                case 'proxy_port':
+                    $this->setCurlOption(CURLOPT_PROXYPORT, $v);
+                    break;
+                default:
+                    $this->_config[$option] = $v;
+                    break;
+            }
         }
 
         return $this;
@@ -129,7 +150,7 @@ class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interfac
 
     /**
      * Direct setter for cURL adapter related options.
-     * 
+     *
      * @param  string|int $option
      * @param  mixed $value
      * @return Zend_Http_Adapter_Curl
@@ -160,9 +181,9 @@ class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interfac
         }
 
         // If we are connected to a different server or port, disconnect first
-        if ($this->_curl 
-            && is_array($this->_connected_to) 
-            && ($this->_connected_to[0] != $host 
+        if ($this->_curl
+            && is_array($this->_connected_to)
+            && ($this->_connected_to[0] != $host
             || $this->_connected_to[1] != $port)
         ) {
             $this->close();
@@ -348,12 +369,16 @@ class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interfac
             $this->_response = str_ireplace("Transfer-Encoding: chunked\r\n", '', $this->_response);
         }
 
-        // TODO: Probably the pattern for multiple handshake requests is always the same, several HTTP codes in the response. Use that information?
-        // cURL automactically handles Expect: 100-continue; and its responses. Delete the HTTP 100 CONTINUE from a response
-        // because it messes up Zend_Http_Response parsing
-        if (stripos($this->_response, "HTTP/1.1 100 Continue\r\n\r\n") !== false) {
-            $this->_response = str_ireplace("HTTP/1.1 100 Continue\r\n\r\n", '', $this->_response);
-        }
+        // Eliminate multiple HTTP responses.
+        do {
+            $parts  = preg_split('|(?:\r?\n){2}|m', $this->_response, 2);
+            $again  = false;
+
+            if (isset($parts[1]) && preg_match("|^HTTP/1\.[01](.*?)\r\n|mi", $parts[1])) {
+                $this->_response    = $parts[1];
+                $again              = true;
+            }
+        } while ($again);
 
         // cURL automatically handles Proxy rewrites, remove the "HTTP/1.0 200 Connection established" string:
         if (stripos($this->_response, "HTTP/1.0 200 Connection established\r\n\r\n") !== false) {
@@ -384,5 +409,15 @@ class Zend_Http_Client_Adapter_Curl implements Zend_Http_Client_Adapter_Interfac
         }
         $this->_curl         = null;
         $this->_connected_to = array(null, null);
+    }
+
+    /**
+     * Get cUrl Handle
+     *
+     * @return resource
+     */
+    public function getHandle()
+    {
+        return $this->_curl;
     }
 }

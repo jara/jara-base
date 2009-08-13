@@ -14,8 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Search_Lucene
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: MultiSearcher.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /** Zend_Search_Lucene_TermStreamsPriorityQueue */
@@ -29,7 +30,7 @@ require_once 'Zend/Search/Lucene/Interface.php';
  *
  * @category   Zend
  * @package    Zend_Search_Lucene
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Search_Lucene_Interface_MultiSearcher implements Zend_Search_Lucene_Interface
@@ -867,7 +868,7 @@ class Zend_Search_Lucene_Interface_MultiSearcher implements Zend_Search_Lucene_I
     /**
      * Terms stream priority queue object
      *
-     * @var Zend_Search_Lucene_termStreamsPriorityQueue
+     * @var Zend_Search_Lucene_TermStreamsPriorityQueue
      */
     private $_termsStream = null;
 
@@ -877,7 +878,7 @@ class Zend_Search_Lucene_Interface_MultiSearcher implements Zend_Search_Lucene_I
     public function resetTermsStream()
     {
         if ($this->_termsStream === null) {
-            $this->_termsStream = new Zend_Search_Lucene_termStreamsPriorityQueue($this->_indices);
+            $this->_termsStream = new Zend_Search_Lucene_TermStreamsPriorityQueue($this->_indices);
         } else {
             $this->_termsStream->resetTermsStream();
         }

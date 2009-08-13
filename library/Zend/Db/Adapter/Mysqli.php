@@ -15,16 +15,11 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Mysqli.php 14692 2009-04-06 02:20:57Z norm2782 $
+ * @version    $Id: Mysqli.php 16203 2009-06-21 18:56:17Z thomas $
  */
 
-
-/**
- * @see Zend_Loader
- */
-require_once 'Zend/Loader.php';
 
 /**
  * @see Zend_Db_Adapter_Abstract
@@ -51,7 +46,7 @@ require_once 'Zend/Db/Statement/Mysqli.php';
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
@@ -329,6 +324,8 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
         );
 
         if ($_isConnected === false || mysqli_connect_errno()) {
+
+            $this->closeConnection();
             /**
              * @see Zend_Db_Adapter_Mysqli_Exception
              */
@@ -377,7 +374,10 @@ class Zend_Db_Adapter_Mysqli extends Zend_Db_Adapter_Abstract
             $this->_stmt->close();
         }
         $stmtClass = $this->_defaultStmtClass;
-        Zend_Loader::loadClass($stmtClass);
+        if (!class_exists($stmtClass)) {
+            require_once 'Zend/Loader.php';
+            Zend_Loader::loadClass($stmtClass);
+        }
         $stmt = new $stmtClass($this, $sql);
         if ($stmt === false) {
             return false;

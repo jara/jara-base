@@ -17,10 +17,8 @@
  * @subpackage Amazon
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Ec2.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
-
-require_once 'Zend/Loader.php';
 
 /**
  * Amazon Ec2 Interface to allow easy creation of the Ec2 Components
@@ -28,7 +26,7 @@ require_once 'Zend/Loader.php';
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Amazon
- * @copyright  Copyright (c) 22005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Service_Amazon_Ec2
@@ -79,7 +77,10 @@ class Zend_Service_Amazon_Ec2
                 break;
         }
 
-        Zend_Loader::loadClass($class);
+        if (!class_exists($class)) {
+            require_once 'Zend/Loader.php';
+            Zend_Loader::loadClass($class);
+        }
         return new $class($key, $secret_key);
     }
 }

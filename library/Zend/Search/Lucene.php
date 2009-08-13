@@ -14,8 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Search_Lucene
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Lucene.php 17164 2009-07-27 03:59:23Z matthew $
  */
 
 /** Zend_Search_Lucene_Document */
@@ -84,7 +85,7 @@ require_once 'Zend/Search/Lucene/Proxy.php';
 /**
  * @category   Zend
  * @package    Zend_Search_Lucene
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
@@ -351,8 +352,7 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
         }
 
         // read version
-        // $segmentsFile->readLong();
-        $segmentsFile->readInt(); $segmentsFile->readInt();
+        $segmentsFile->readLong();
 
         // read segment name counter
         $segmentsFile->readInt();
@@ -398,8 +398,7 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
         }
 
         // read version
-        // $segmentsFile->readLong();
-        $segmentsFile->readInt(); $segmentsFile->readInt();
+        $segmentsFile->readLong();
 
         // read segment name counter
         $segmentsFile->readInt();
@@ -414,19 +413,12 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
             $segSize = $segmentsFile->readInt();
 
             // 2.1+ specific properties
-            //$delGen          = $segmentsFile->readLong();
-            $delGenHigh        = $segmentsFile->readInt();
-            $delGenLow         = $segmentsFile->readInt();
-            if ($delGenHigh == (int)0xFFFFFFFF  && $delGenLow == (int)0xFFFFFFFF) {
-                $delGen = -1; // There are no deletes
-            } else {
-                $delGen = ($delGenHigh << 32) | $delGenLow;
-            }
+            $delGen = $segmentsFile->readLong();
 
             if ($this->_formatVersion == self::FORMAT_2_3) {
                 $docStoreOffset = $segmentsFile->readInt();
 
-                if ($docStoreOffset != -1) {
+                if ($docStoreOffset != (int)0xFFFFFFFF) {
                     $docStoreSegment        = $segmentsFile->readString();
                     $docStoreIsCompoundFile = $segmentsFile->readByte();
 
@@ -960,6 +952,13 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
             $fieldNames = $this->getFieldNames();
             $sortArgs   = array();
 
+            // PHP 5.3 now expects all arguments to array_multisort be passed by
+            // reference; since constants can't be passed by reference, create 
+            // some placeholder variables.
+            $sortReg    = SORT_REGULAR;
+            $sortAsc    = SORT_ASC;
+            $sortNum    = SORT_NUMERIC;
+
             require_once 'Zend/Search/Lucene/Exception.php';
             for ($count = 1; $count < count($argList); $count++) {
                 $fieldName = $argList[$count];
@@ -987,32 +986,32 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
                     $valuesArray[] = $value;
                 }
 
-                $sortArgs[] = $valuesArray;
+                $sortArgs[] = &$valuesArray;
 
                 if ($count + 1 < count($argList)  &&  is_integer($argList[$count+1])) {
                     $count++;
-                    $sortArgs[] = $argList[$count];
+                    $sortArgs[] = &$argList[$count];
 
                     if ($count + 1 < count($argList)  &&  is_integer($argList[$count+1])) {
                         $count++;
-                        $sortArgs[] = $argList[$count];
+                        $sortArgs[] = &$argList[$count];
                     } else {
                         if ($argList[$count] == SORT_ASC  || $argList[$count] == SORT_DESC) {
-                            $sortArgs[] = SORT_REGULAR;
+                            $sortArgs[] = &$sortReg;
                         } else {
-                            $sortArgs[] = SORT_ASC;
+                            $sortArgs[] = &$sortAsc;
                         }
                     }
                 } else {
-                    $sortArgs[] = SORT_ASC;
-                    $sortArgs[] = SORT_REGULAR;
+                    $sortArgs[] = &$sortAsc;
+                    $sortArgs[] = &$sortReg;
                 }
             }
 
             // Sort by id's if values are equal
-            $sortArgs[] = $ids;
-            $sortArgs[] = SORT_ASC;
-            $sortArgs[] = SORT_NUMERIC;
+            $sortArgs[] = &$ids;
+            $sortArgs[] = &$sortAsc;
+            $sortArgs[] = &$sortNum;
 
             // Array to be sorted
             $sortArgs[] = &$hits;
@@ -1448,7 +1447,7 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
     /**
      * Terms stream priority queue object
      *
-     * @var Zend_Search_Lucene_termStreamsPriorityQueue
+     * @var Zend_Search_Lucene_TermStreamsPriorityQueue
      */
     private $_termsStream = null;
 
@@ -1458,7 +1457,7 @@ class Zend_Search_Lucene implements Zend_Search_Lucene_Interface
     public function resetTermsStream()
     {
     	if ($this->_termsStream === null) {
-            $this->_termsStream = new Zend_Search_Lucene_termStreamsPriorityQueue($this->_segmentInfos);
+            $this->_termsStream = new Zend_Search_Lucene_TermStreamsPriorityQueue($this->_segmentInfos);
     	} else {
     		$this->_termsStream->resetTermsStream();
     	}

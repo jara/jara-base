@@ -14,9 +14,9 @@
  *
  * @category  Zend
  * @package   Zend_Currency
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: Currency.php 6137 2007-08-19 14:55:27Z shreef $
+ * @version   $Id: Currency.php 17080 2009-07-25 21:14:29Z thomas $
  */
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Locale/Format.php';
  *
  * @category  Zend
  * @package   Zend_Currency
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Currency
@@ -138,7 +138,7 @@ class Zend_Currency
         // Format the number
         $format = $options['format'];
         $locale = $this->_locale;
-        if (empty($format) === true) {
+        if (empty($format)) {
             $format = Zend_Locale_Data::getContent($this->_locale, 'currencynumber');
         } else if (Zend_Locale::isLocale($format, true, false)) {
             $locale = $format;
@@ -149,7 +149,7 @@ class Zend_Currency
         $original = $value;
         $value    = Zend_Locale_Format::toNumber($value, array('locale'        => $locale,
                                                                'number_format' => $format,
-                                                               'precision'     => $options['precision']));
+                                                              'precision'     => $options['precision']));
 
         if ($options['position'] !== self::STANDARD) {
             $value = str_replace('¤', '', $value);

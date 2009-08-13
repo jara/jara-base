@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Amazon_S3
- * @copyright  Copyright (c) 2005-2008, Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: S3.php 9786 2008-06-24 23:50:25Z jplock $
+ * @version    $Id: Stream.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Service/Amazon/S3.php';
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Amazon_S3
- * @copyright  Copyright (c) 2005-2008, Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Service_Amazon_S3_Stream
@@ -113,7 +113,7 @@ class Zend_Service_Amazon_S3_Stream
     {
         $url = parse_url($path);
         if ($url['host']) {
-            return $url['path'] ? $url['host'].'/'.$url['path'] : $url['host'];
+            return !empty($url['path']) ? $url['host'].$url['path'] : $url['host'];
         }
 
         return '';
@@ -319,7 +319,7 @@ class Zend_Service_Amazon_S3_Stream
         $stat = array();
         $stat['dev'] = 0;
         $stat['ino'] = 0;
-        $stat['mode'] = 0;
+        $stat['mode'] = 0777;
         $stat['nlink'] = 0;
         $stat['uid'] = 0;
         $stat['gid'] = 0;
@@ -331,7 +331,13 @@ class Zend_Service_Amazon_S3_Stream
         $stat['blksize'] = 0;
         $stat['blocks'] = 0;
 
-        $info = $this->_s3->getInfo($this->_objectName);
+	if(($slash = strchr($this->_objectName, '/')) === false || $slash == strlen($this->_objectName)-1) {
+		/* bucket */
+		$stat['mode'] |= 040000;
+	} else {
+		$stat['mode'] |= 0100000;
+	}
+       	$info = $this->_s3->getInfo($this->_objectName);
         if (!empty($info)) {
             $stat['size']  = $info['size'];
             $stat['atime'] = time();
@@ -423,7 +429,7 @@ class Zend_Service_Amazon_S3_Stream
         $stat = array();
         $stat['dev'] = 0;
         $stat['ino'] = 0;
-        $stat['mode'] = 0;
+        $stat['mode'] = 0777;
         $stat['nlink'] = 0;
         $stat['uid'] = 0;
         $stat['gid'] = 0;
@@ -435,7 +441,15 @@ class Zend_Service_Amazon_S3_Stream
         $stat['blksize'] = 0;
         $stat['blocks'] = 0;
 
-        $info = $this->_getS3Client($path)->getInfo($this->_getNamePart($path));
+	$name = $this->_getNamePart($path);
+	if(($slash = strchr($name, '/')) === false || $slash == strlen($name)-1) {
+		/* bucket */
+		$stat['mode'] |= 040000;
+	} else {
+		$stat['mode'] |= 0100000;
+	}
+       	$info = $this->_getS3Client($path)->getInfo($name);
+
         if (!empty($info)) {
             $stat['size']  = $info['size'];
             $stat['atime'] = time();

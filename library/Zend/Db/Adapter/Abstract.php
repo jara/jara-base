@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 15189 2009-04-27 01:56:32Z matthew $
+ * @version    $Id: Abstract.php 16920 2009-07-21 13:32:28Z ralph $
  */
 
 
@@ -32,18 +32,12 @@ require_once 'Zend/Db.php';
 require_once 'Zend/Db/Select.php';
 
 /**
- * @see Zend_Loader
- */
-require_once 'Zend/Loader.php';
-
-
-/**
  * Class for connecting to SQL databases and performing common operations.
  *
  * @category   Zend
  * @package    Zend_Db
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Db_Adapter_Abstract
@@ -211,15 +205,19 @@ abstract class Zend_Db_Adapter_Abstract
                 }
             }
         }
-        
+
         if (!isset($config['charset'])) {
             $config['charset'] = null;
         }
         
+        if (!isset($config['persistent'])) {
+            $config['persistent'] = false;
+        }
+
         $this->_config = array_merge($this->_config, $config);
         $this->_config['options'] = $options;
         $this->_config['driver_options'] = $driverOptions;
-        
+
 
         // obtain the case setting, if there is one
         if (array_key_exists(Zend_Db::CASE_FOLDING, $options)) {
@@ -381,7 +379,10 @@ abstract class Zend_Db_Adapter_Abstract
         }
 
         if ($profilerInstance === null) {
-            Zend_Loader::loadClass($profilerClass);
+            if (!class_exists($profilerClass)) {
+                require_once 'Zend/Loader.php';
+                Zend_Loader::loadClass($profilerClass);
+            }
             $profilerInstance = new $profilerClass();
         }
 
@@ -434,23 +435,6 @@ abstract class Zend_Db_Adapter_Abstract
     }
 
     /**
-     * Executes an SQL statement and return the number of affected rows
-     *
-     * @param  mixed  $sql  The SQL statement with placeholders.
-     *                      May be a string or Zend_Db_Select.
-     * @return Zend_Db_Statement_Interface
-     */
-    public function exec($sql)
-    {
-        // is the $sql a Zend_Db_Select object?
-        if ($sql instanceof Zend_Db_Select) {
-            $sql = $sql->assemble();
-        }
-
-        return $this->getConnection()->exec($sql);
-    }
-
-    /**
      * Prepares and executes an SQL statement with bound data.
      *
      * @param  mixed  $sql  The SQL statement with placeholders.
@@ -491,7 +475,7 @@ abstract class Zend_Db_Adapter_Abstract
     /**
      * Leave autocommit mode and begin a transaction.
      *
-     * @return bool True
+     * @return Zend_Db_Adapter_Abstract
      */
     public function beginTransaction()
     {
@@ -499,13 +483,13 @@ abstract class Zend_Db_Adapter_Abstract
         $q = $this->_profiler->queryStart('begin', Zend_Db_Profiler::TRANSACTION);
         $this->_beginTransaction();
         $this->_profiler->queryEnd($q);
-        return true;
+        return $this;
     }
 
     /**
      * Commit a transaction and return to autocommit mode.
      *
-     * @return bool True
+     * @return Zend_Db_Adapter_Abstract
      */
     public function commit()
     {
@@ -513,13 +497,13 @@ abstract class Zend_Db_Adapter_Abstract
         $q = $this->_profiler->queryStart('commit', Zend_Db_Profiler::TRANSACTION);
         $this->_commit();
         $this->_profiler->queryEnd($q);
-        return true;
+        return $this;
     }
 
     /**
      * Roll back a transaction and return to autocommit mode.
      *
-     * @return bool True
+     * @return Zend_Db_Adapter_Abstract
      */
     public function rollBack()
     {
@@ -527,7 +511,7 @@ abstract class Zend_Db_Adapter_Abstract
         $q = $this->_profiler->queryStart('rollback', Zend_Db_Profiler::TRANSACTION);
         $this->_rollBack();
         $this->_profiler->queryEnd($q);
-        return true;
+        return $this;
     }
 
     /**
@@ -985,8 +969,8 @@ abstract class Zend_Db_Adapter_Abstract
      *
      * @param string|array|Zend_Db_Expr $ident The identifier or expression.
      * @param string $alias An optional alias.
-     * @param string $as The string to add between the identifier/expression and the alias.
      * @param boolean $auto If true, heed the AUTO_QUOTE_IDENTIFIERS config option.
+     * @param string $as The string to add between the identifier/expression and the alias.
      * @return string The quoted identifier and alias.
      */
     protected function _quoteIdentifierAs($ident, $alias = null, $auto = false, $as = ' AS ')
@@ -1084,7 +1068,7 @@ abstract class Zend_Db_Adapter_Abstract
      * can invoke it.
      *
      * @param string $key
-     * @returns string
+     * @return string
      */
     public function foldCase($key)
     {
@@ -1197,7 +1181,7 @@ abstract class Zend_Db_Adapter_Abstract
      * Prepare a statement and return a PDOStatement-like object.
      *
      * @param string|Zend_Db_Select $sql SQL query
-     * @return Zend_Db_Statment|PDOStatement
+     * @return Zend_Db_Statement|PDOStatement
      */
     abstract public function prepare($sql);
 

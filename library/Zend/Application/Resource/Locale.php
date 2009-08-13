@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Locale.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -27,7 +27,7 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Application_Resource_Locale 
@@ -60,10 +60,12 @@ class Zend_Application_Resource_Locale
     {
         if (null === $this->_locale) {
             $options = $this->getOptions();
-            if (isset($options['default'])) {
+            if (!isset($options['default'])) {
+                $this->_locale = new Zend_Locale();
+            } else { 
                 Zend_Locale::setDefault($options['default']);
+                $this->_locale = new Zend_Locale($options['default']);
             }
-            $this->_locale = new Zend_Locale();
 
             $key = (isset($options['registry_key']) && !is_numeric($options['registry_key']))
                 ? $options['registry_key']

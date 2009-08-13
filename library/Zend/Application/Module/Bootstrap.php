@@ -15,8 +15,8 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Module
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Bootstrap.php 14939 2009-04-16 11:47:02Z matthew $
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Bootstrap.php 16200 2009-06-21 18:50:06Z thomas $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -32,7 +32,7 @@ require_once 'Zend/Application/Bootstrap/Bootstrap.php';
  * @uses       Zend_Application_Bootstrap_Bootstrap
  * @package    Zend_Application
  * @subpackage Module
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Application_Module_Bootstrap 
@@ -53,6 +53,11 @@ abstract class Zend_Application_Module_Bootstrap
     {
         $this->setApplication($application);
 
+        // Use same plugin loader as parent bootstrap
+        if ($application instanceof Zend_Application_Bootstrap_ResourceBootstrapper) {
+            $this->setPluginLoader($application->getPluginLoader());
+        }
+
         $key = strtolower($this->getModuleName());
         if ($application->hasOption($key)) {
             // Don't run via setOptions() to prevent duplicate initialization
@@ -64,8 +69,17 @@ abstract class Zend_Application_Module_Bootstrap
                 'resourceloader' => $application->getOption('resourceloader')
             ));
         }
-
         $this->initResourceLoader();
+
+        // ZF-6545: ensure front controller resource is loaded
+        if (!$this->hasPluginResource('FrontController')) {
+            $this->registerPluginResource('FrontController');
+        }
+
+        // ZF-6545: prevent recursive registration of modules
+        if ($this->hasPluginResource('Modules')) {
+            $this->unregisterPluginResource('Modules');
+        }
     }
 
     /**

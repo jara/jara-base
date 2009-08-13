@@ -15,16 +15,10 @@
  *
  * @category   Zend
  * @package    Zend_Db
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Db.php 13136 2008-12-10 18:36:46Z doctorrock83 $
+ * @version    $Id: Db.php 16203 2009-06-21 18:56:17Z thomas $
  */
-
-
-/**
- * @see Zend_Loader
- */
-require_once 'Zend/Loader.php';
 
 
 /**
@@ -32,7 +26,7 @@ require_once 'Zend/Loader.php';
  *
  * @category   Zend
  * @package    Zend_Db
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Db
@@ -254,7 +248,10 @@ class Zend_Db
          * Load the adapter class.  This throws an exception
          * if the specified class cannot be loaded.
          */
-        Zend_Loader::loadClass($adapterName);
+        if (!class_exists($adapterName)) {
+            require_once 'Zend/Loader.php';
+            Zend_Loader::loadClass($adapterName);
+        }
 
         /*
          * Create an instance of the adapter class.

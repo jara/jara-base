@@ -17,7 +17,7 @@
  * @subpackage Framework
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Abstract.php 16971 2009-07-22 18:05:45Z mikaelkael $
  */
 
 /**
@@ -59,6 +59,23 @@ abstract class Zend_Tool_Framework_Client_Abstract implements Zend_Tool_Framewor
      * @var Zend_Log
      */
     protected $_debugLogger = null;
+    
+    public function __construct($options = array())
+    {
+        if ($options) {
+            $this->setOptions($options);
+        }
+    }
+    
+    public function setOptions(Array $options)
+    {
+        foreach ($options as $optionName => $optionValue) {
+            $setMethodName = 'set' . $optionName;
+            if (method_exists($this, $setMethodName)) {
+                $this->{$setMethodName}($optionValue);
+            }
+        }
+    }
     
     /**
      * getName() - Return the client name which can be used to 
@@ -242,7 +259,7 @@ abstract class Zend_Tool_Framework_Client_Abstract implements Zend_Tool_Framewor
         $provider = $providerSignature->getProvider();
 
         // ensure that we can pretend if this is a pretend request
-        if ($request->isPretend() && (!$provider instanceof Zend_Tool_Project_Provider_Pretendable)) {
+        if ($request->isPretend() && (!$provider instanceof Zend_Tool_Framework_Provider_Pretendable)) {
             require_once 'Zend/Tool/Framework/Client/Exception.php';
             throw new Zend_Tool_Framework_Client_Exception('Dispatcher error - provider does not support pretend');  
         }

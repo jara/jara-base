@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Frontcontroller.php 14960 2009-04-17 15:52:17Z matthew $
+ * @version    $Id: Frontcontroller.php 16200 2009-06-21 18:50:06Z thomas $
  */
 
 /**
@@ -26,7 +26,7 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resource_ResourceAbstract
@@ -39,7 +39,7 @@ class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resourc
     /**
      * Initialize Front Controller
      * 
-     * @return void
+     * @return Zend_Controller_Front
      */
     public function init()
     {
@@ -52,7 +52,7 @@ class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resourc
                         $front->setControllerDirectory($value);
                     } elseif (is_array($value)) {
                         foreach ($value as $module => $directory) {
-                            $front->setControllerDirectory($directory, $module);
+                            $front->addControllerDirectory($directory, $module);
                         }
                     }
                     break;
