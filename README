@@ -2,20 +2,13 @@ Jara Zend Framework Application
 ===============================
  A Zend Framework starter application. This is essentially a modified version of the Zend Studio project structure with the following variations/additions:
 
- -- Defined an APP_ROOT constant. 
- -- Defined an APP_ENV constant.  
- -- Added include paths dynamically.  
- -- Set front controller directories dynamically. 
- -- Added a test helper to the tests folder.  
- -- Dynamically added tests to the AllTests suite.
- -- Changed the folder structure for the tests. 
- -- Added a 'page' route for handling static site pages. 
+ -- Added a test helper to the tests folder.   
+ -- Added a static route plugin for handling static site pages. 
  
 Usage
 ==========
  -- Download and unzip Jara Base.
  -- Copy to the library files to the root of your application.
- -- Make sure the Zend library files are in the application include path.
  -- Set up your virtual host and make the 'public' folder the web root. 
  -- Enjoy!
  
@@ -24,3 +17,5 @@ Adding static pages
 Jara Base already includes an about page with a corresponding view and this page is accessed with 'http://www.example.com/about' rather than 'http://www.example.com/index/about'.
 
 To add a static page, add an action to the 'Index' controller of the 'Default' module. Add a corresponding view and the page will be available at 'http://www.example.com/:action'.
+Static routes with the same name as your controller actions are created by default. 
+To disable static routes, comment out (or delete) the static routes line in the plugins section of the application config file (application.ini).

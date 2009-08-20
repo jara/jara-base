@@ -483,7 +483,7 @@ class Zend_Controller_Dispatcher_Standard extends Zend_Controller_Dispatcher_Abs
     {
         $action = $request->getActionName();
         if (empty($action)) {
-            $action = $this->getDefaultAction();
+            $action = $this->getDefaultAction(); 
             $request->setActionName($action);
         }
 

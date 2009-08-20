@@ -172,8 +172,8 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
 
             if (count($path) && !empty($path[0])) {
                 $values[$this->_actionKey] = array_shift($path);
-            }
-
+            }       
+        
             if ($numSegs = count($path)) {
                 for ($i = 0; $i < $numSegs; $i = $i + 2) {
                     $key = urldecode($path[$i]);
