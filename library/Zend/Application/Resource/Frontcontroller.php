@@ -17,7 +17,7 @@
  * @subpackage Resource
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Frontcontroller.php 16200 2009-06-21 18:50:06Z thomas $
+ * @version    $Id: Frontcontroller.php 17737 2009-08-21 20:57:50Z matthew $
  */
 
 /**
@@ -78,7 +78,9 @@ class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resourc
                     break;
                     
                 case 'baseurl':
-                    $front->setBaseUrl($value);
+                    if (!empty($value)) {
+                        $front->setBaseUrl($value);
+                    }
                     break;
                     
                 case 'params':

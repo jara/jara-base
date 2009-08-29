@@ -17,7 +17,7 @@
  * @subpackage Framework
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 17523 2009-08-10 15:59:54Z ralph $
+ * @version    $Id: Abstract.php 17795 2009-08-24 19:04:01Z ralph $
  */
 
 /**
@@ -123,7 +123,7 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
         
         $parentDirectoriesArray = explode(DIRECTORY_SEPARATOR, ltrim($projectDirectory, DIRECTORY_SEPARATOR));
         while ($parentDirectoriesArray) {
-            $projectDirectoryAssembled = DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $parentDirectoriesArray);
+            $projectDirectoryAssembled = implode(DIRECTORY_SEPARATOR, $parentDirectoriesArray);
             
             if (DIRECTORY_SEPARATOR !== "\\") {
                 $projectDirectoryAssembled = DIRECTORY_SEPARATOR . $projectDirectoryAssembled;

@@ -17,7 +17,7 @@
  * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Abstract.php 16920 2009-07-21 13:32:28Z ralph $
+ * @version    $Id: Abstract.php 17702 2009-08-20 23:54:16Z yoshida@zend.co.jp $
  */
 
 
@@ -209,7 +209,7 @@ abstract class Zend_Db_Adapter_Abstract
         if (!isset($config['charset'])) {
             $config['charset'] = null;
         }
-        
+
         if (!isset($config['persistent'])) {
             $config['persistent'] = false;
         }
@@ -738,7 +738,7 @@ abstract class Zend_Db_Adapter_Abstract
      *
      * @param string|Zend_Db_Select $sql An SQL SELECT statement.
      * @param mixed $bind Data to bind into SELECT placeholders.
-     * @return string
+     * @return array
      */
     public function fetchAssoc($sql, $bind = array())
     {
@@ -775,7 +775,7 @@ abstract class Zend_Db_Adapter_Abstract
      *
      * @param string|Zend_Db_Select $sql An SQL SELECT statement.
      * @param mixed $bind Data to bind into SELECT placeholders.
-     * @return string
+     * @return array
      */
     public function fetchPairs($sql, $bind = array())
     {

@@ -16,7 +16,7 @@
  * @package    Zend_Application
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Application.php 16290 2009-06-25 20:14:50Z matthew $
+ * @version    $Id: Application.php 17802 2009-08-24 21:15:12Z matthew $
  */
 
 /**
@@ -47,6 +47,13 @@ class Zend_Application
      * @var string
      */
     protected $_environment;
+
+    /**
+     * Flattened (lowercase) option keys
+     * 
+     * @var array
+     */
+    protected $_optionKeys = array();
 
     /**
      * Options for Zend_Application
@@ -116,14 +123,16 @@ class Zend_Application
      */
     public function setOptions(array $options)
     {
-        $options = array_change_key_case($options, CASE_LOWER);
-
         if (!empty($options['config'])) {
             $options = $this->mergeOptions($options, $this->_loadConfig($options['config']));
         }
         
         $this->_options = $options;
-        
+
+        $options = array_change_key_case($options, CASE_LOWER);
+
+        $this->_optionKeys = array_keys($options);
+
         if (!empty($options['phpsettings'])) {
             $this->setPhpSettings($options['phpsettings']);
         }
@@ -180,7 +189,7 @@ class Zend_Application
      */
     public function hasOption($key)
     {
-        return array_key_exists($key, $this->_options);
+        return in_array($key, $this->_optionKeys);
     }
 
     /**
@@ -192,7 +201,9 @@ class Zend_Application
     public function getOption($key)
     {
         if ($this->hasOption($key)) {
-            return $this->_options[$key];
+            $options = $this->getOptions();
+            $options = array_change_key_case($options, CASE_LOWER);
+            return $options[strtolower($key)];
         }
         return null;
     }

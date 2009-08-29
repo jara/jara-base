@@ -13,48 +13,28 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_XmlRpc
- * @subpackage Value
+ * @package    Paginator
+ * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Nil.php 17786 2009-08-23 22:26:33Z lars $
+ * @version    $Id: AdapterAggregate.php 17631 2009-08-16 12:29:46Z norm2782 $
  */
 
-
 /**
- * Zend_XmlRpc_Value_Scalar
- */
-require_once 'Zend/XmlRpc/Value/Scalar.php';
-
-
-/**
+ * Interface that aggregates a Zend_Paginator_Adapter_Abstract just like IteratorAggregate does for Iterators.
+ *
  * @category   Zend
- * @package    Zend_XmlRpc
- * @subpackage Value
+ * @package    Paginator
+ * @subpackage Adapter
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_XmlRpc_Value_Nil extends Zend_XmlRpc_Value_Scalar
+interface Zend_Paginator_AdapterAggregate
 {
-
     /**
-     * Set the value of a nil native type
+     * Return a fully configured Paginator Adapter from this method.
      *
+     * @return Zend_Paginator_Adapter_Abstract
      */
-    public function __construct()
-    {
-        $this->_type = self::XMLRPC_TYPE_NIL;
-        $this->_value = null;
-    }
-
-    /**
-     * Return the value of this object, convert the XML-RPC native nill value into a PHP NULL
-     *
-     * @return null
-     */
-    public function getValue()
-    {
-        return null;
-    }
+    public function getPaginatorAdapter();
 }
-
