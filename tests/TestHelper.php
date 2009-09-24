@@ -15,7 +15,7 @@ $autoloader = Zend_Loader_Autoloader::getInstance();
 /**
  * Base Controller Test Class
  * 
- * All controller test should extend this
+ * All controller tests should extend this
  */
 abstract class BaseControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase {
 
