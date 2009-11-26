@@ -17,7 +17,7 @@
  * @subpackage Server
  * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: System.php 17803 2009-08-24 21:22:58Z matthew $
+ * @version    $Id: System.php 18951 2009-11-12 16:26:19Z alexander $
  */
 
 /**
@@ -38,8 +38,8 @@ class Zend_XmlRpc_Server_System
 
     /**
      * Constructor
-     * 
-     * @param  Zend_XmlRpc_Server $server 
+     *
+     * @param  Zend_XmlRpc_Server $server
      * @return void
      */
     public function __construct(Zend_XmlRpc_Server $server)
@@ -137,7 +137,7 @@ class Zend_XmlRpc_Server_System
                     $request->setMethod($method['methodName']);
                     $request->setParams($method['params']);
                     $response = $this->_server->handle($request);
-                    if ($response instanceof Zend_XmlRpc_Fault 
+                    if ($response instanceof Zend_XmlRpc_Fault
                         || $response->isFault()
                     ) {
                         $fault = $response;

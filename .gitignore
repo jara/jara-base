@@ -1,4 +1,5 @@
 bin
+nbproject
 .cache
 .settings
 .project
